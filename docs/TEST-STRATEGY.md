@@ -10,6 +10,8 @@
 
 Les tests RLS sont exécutés avec `pnpm test:db` après `pnpm supabase:reset`. Le fichier `supabase/tests/001_identity_and_multitenancy_rls.sql` couvre 18 assertions déterministes liées à REQ-002, REQ-010 à 013, SEC-04 et SEC-06.
 
+Le scénario `e2e/auth-project.spec.ts` utilise une identité synthétique unique et Mailpit. Il vérifie l'inscription, la confirmation email, la session protégée, la création persistée d'un projet, la déconnexion et la reconnexion. Il est exécuté dans le job CI Supabase après les tests RLS.
+
 ## Pyramide de tests
 
 | Niveau | Cible | Obligatoire avant fusion |

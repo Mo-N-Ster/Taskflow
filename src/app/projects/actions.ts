@@ -29,16 +29,15 @@ export async function createProject(formData: FormData) {
     redirect("/login");
   }
 
-  const { data, error } = await supabase
+  const projectId = crypto.randomUUID();
+  const { error } = await supabase
     .from("projects")
-    .insert({ ...parsed.data, owner_id: user.id })
-    .select("id")
-    .single();
+    .insert({ id: projectId, ...parsed.data, owner_id: user.id });
 
-  if (error || !data) {
+  if (error) {
     redirect("/projects/new?error=PROJECT_CREATION_FAILED");
   }
 
   revalidatePath("/dashboard");
-  redirect(`/projects/${data.id}`);
+  redirect(`/projects/${projectId}`);
 }

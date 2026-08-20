@@ -51,6 +51,20 @@ jobs:
       - name: RLS tests
         run: supabase test db
 
+      - name: Export local Supabase environment
+        shell: bash
+        run: |
+          eval "$(supabase status -o env)"
+          echo "NEXT_PUBLIC_SUPABASE_URL=$API_URL" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=$ANON_KEY" >> "$GITHUB_ENV"
+          echo "NEXT_PUBLIC_APP_URL=http://127.0.0.1:3100" >> "$GITHUB_ENV"
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Auth and project E2E
+        run: pnpm test:e2e
+
   quality:
     name: Quality checks
     runs-on: ubuntu-latest

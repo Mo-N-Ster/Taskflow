@@ -32,6 +32,7 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 | REQ-012 | rôle `observer` en lecture seule | `001_identity_and_multitenancy_rls.sql` |
 | REQ-013 | révocation d'un membre et protection du propriétaire | `001_identity_and_multitenancy_rls.sql` |
 | SEC-04, SEC-06, STPA UCA-01 | RLS et fonctions privées anti-récursion | test croisé de deux propriétaires, deux projets et un observateur |
+| REQ-001, REQ-003, SEC-14, SEC-17 | actions Auth SSR, confirmation Mailpit et cookies de session | `e2e/auth-project.spec.ts` |
 
 ## Definition of Done
 
