@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   getProjectProgress,
+  getTaskPriorityCounts,
   getTaskStatusCounts,
   getTaskSummary,
   type TaskStatus,
@@ -55,6 +56,22 @@ describe("TaskFlow progress calculation", () => {
       review: 1,
       queued: 1,
       progress: 40,
+    });
+  });
+
+  it("groups tasks by priority to support project triage", () => {
+    const tasks: Array<{ priority: "Low" | "Medium" | "High" }> = [
+      { priority: "High" },
+      { priority: "High" },
+      { priority: "Medium" },
+      { priority: "Low" },
+      { priority: "Medium" },
+    ];
+
+    expect(getTaskPriorityCounts(tasks)).toEqual({
+      Low: 1,
+      Medium: 2,
+      High: 2,
     });
   });
 });

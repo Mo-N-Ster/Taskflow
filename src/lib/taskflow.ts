@@ -1,14 +1,16 @@
 export type TaskStatus = "todo" | "in_progress" | "review" | "done";
+export type TaskPriority = "Low" | "Medium" | "High";
 
 export type ProjectTask = {
   id: string;
   title: string;
   status: TaskStatus;
   assignee: string;
-  priority: "Low" | "Medium" | "High";
+  priority: TaskPriority;
 };
 
 export type TaskStatusCounts = Record<TaskStatus, number>;
+export type TaskPriorityCounts = Record<TaskPriority, number>;
 
 export type TaskSummary = {
   total: number;
@@ -57,5 +59,15 @@ export function getTaskSummary(
     review,
     queued,
     progress: total === 0 ? 0 : Math.round((completed / total) * 100),
+  };
+}
+
+export function getTaskPriorityCounts(
+  tasks: Array<{ priority: TaskPriority }>,
+): TaskPriorityCounts {
+  return {
+    Low: tasks.filter((task) => task.priority === "Low").length,
+    Medium: tasks.filter((task) => task.priority === "Medium").length,
+    High: tasks.filter((task) => task.priority === "High").length,
   };
 }

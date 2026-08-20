@@ -1,8 +1,12 @@
+import Link from "next/link";
+
 import {
   getProjectProgress,
+  getTaskPriorityCounts,
   getTaskStatusCounts,
   getTaskSummary,
   type ProjectTask,
+  type TaskPriority,
   type TaskStatus,
 } from "../lib/taskflow";
 
@@ -37,10 +41,17 @@ const statusClasses: Record<TaskStatus, string> = {
   done: "bg-emerald-100 text-emerald-700",
 };
 
+const priorityClasses: Record<TaskPriority, string> = {
+  Low: "bg-slate-700 text-slate-200",
+  Medium: "bg-amber-500/15 text-amber-300",
+  High: "bg-rose-500/15 text-rose-300",
+};
+
 export default function Home() {
   const completion = getProjectProgress(tasks);
   const statusCounts = getTaskStatusCounts(tasks);
   const summary = getTaskSummary(tasks);
+  const priorityCounts = getTaskPriorityCounts(tasks);
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-50">
@@ -55,9 +66,12 @@ export default function Home() {
             <div className="rounded-full border border-slate-700 bg-slate-950/70 px-3 py-1.5 text-sm text-slate-200">
               Sprint R-18
             </div>
-            <button className="rounded-full bg-cyan-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-cyan-300">
+            <Link href="/projects/new" className="rounded-full bg-cyan-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-cyan-300">
               + Nouvelle tâche
-            </button>
+            </Link>
+            <Link href="/dashboard" className="rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500">
+              Voir dashboard
+            </Link>
           </div>
         </header>
 
@@ -66,7 +80,7 @@ export default function Home() {
             { label: "Progression", value: `${completion}%`, accent: "text-cyan-300" },
             { label: "Tâches actives", value: String(summary.inProgress + summary.review), accent: "text-violet-300" },
             { label: "Membres", value: "6", accent: "text-emerald-300" },
-            { label: "Retards", value: "2", accent: "text-amber-300" },
+            { label: "Priorité forte", value: String(priorityCounts.High), accent: "text-amber-300" },
           ].map((stat) => (
             <article key={stat.label} className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
               <p className="text-sm text-slate-400">{stat.label}</p>
@@ -157,7 +171,9 @@ export default function Home() {
                             <p className="mt-2 text-sm font-medium text-white">{task.title}</p>
                             <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
                               <span>{task.assignee}</span>
-                              <span>{task.priority}</span>
+                              <span className={`inline-flex rounded-full px-2 py-1 text-[10px] font-medium ${priorityClasses[task.priority]}`}>
+                                {task.priority}
+                              </span>
                             </div>
                           </article>
                         ))
@@ -182,6 +198,28 @@ export default function Home() {
                   <div key={item.label} className="flex items-center justify-between rounded-2xl bg-slate-950/70 p-3">
                     <span className="text-slate-300">{item.label}</span>
                     <span className="font-medium text-white">{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+              <p className="text-sm text-slate-400">Priorités</p>
+              <div className="mt-4 space-y-3">
+                {[
+                  { label: "Haute", value: priorityCounts.High },
+                  { label: "Moyenne", value: priorityCounts.Medium },
+                  { label: "Faible", value: priorityCounts.Low },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center justify-between rounded-2xl bg-slate-950/70 p-3">
+                    <span className="text-slate-300">{item.label}</span>
+                    <span
+                      className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${priorityClasses[
+                        item.label === "Haute" ? "High" : item.label === "Moyenne" ? "Medium" : "Low"
+                      ]}`}
+                    >
+                      {item.value}
+                    </span>
                   </div>
                 ))}
               </div>
