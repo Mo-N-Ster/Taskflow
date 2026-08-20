@@ -3,11 +3,11 @@ import Link from "next/link";
 import { login } from "@/app/auth/actions";
 
 type LoginPageProps = {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; status?: string }>;
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { error } = await searchParams;
+  const { error, status } = await searchParams;
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10 text-slate-50">
@@ -15,6 +15,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">TaskFlow</p>
         <h1 className="mt-3 text-3xl font-semibold text-white">Connexion</h1>
         <p className="mt-2 text-sm text-slate-400">Accédez à vos projets et à votre activité autorisée.</p>
+
+        {status === "SIGNED_OUT" ? (
+          <p role="status" className="mt-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">
+            Vous êtes maintenant déconnecté.
+          </p>
+        ) : null}
 
         {error ? (
           <p role="alert" className="mt-5 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">
@@ -45,16 +51,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             />
           </label>
 
-          <div className="flex items-center justify-between text-sm text-slate-400">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" className="h-4 w-4 rounded border-slate-700 bg-slate-950" />
-              <span>Se souvenir de moi</span>
-            </label>
-            <button type="button" className="text-cyan-300 hover:text-cyan-200">
-              Mot de passe oublié ?
-            </button>
-          </div>
-
           <button
             type="submit"
             className="w-full rounded-2xl bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
@@ -67,6 +63,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           Pas encore de compte ?{" "}
           <Link href="/register" className="font-medium text-cyan-300 hover:text-cyan-200">
             Créer un compte
+          </Link>
+        </p>
+        <p className="mt-3 text-center text-sm">
+          <Link href="/" className="text-slate-400 transition hover:text-white">
+            Retour à l’accueil
           </Link>
         </p>
       </div>

@@ -10,7 +10,12 @@ type ProjectSummary = {
   owner_id: string;
 };
 
-export default async function DashboardPage() {
+type DashboardPageProps = {
+  searchParams: Promise<{ error?: string }>;
+};
+
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const { error } = await searchParams;
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data } = await supabase
@@ -22,6 +27,11 @@ export default async function DashboardPage() {
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-50">
       <div className="mx-auto max-w-6xl">
+        {error === "LOGOUT_FAILED" ? (
+          <p role="alert" className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">
+            La déconnexion a échoué. Veuillez réessayer.
+          </p>
+        ) : null}
         <header className="mb-6 flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/80 p-5 backdrop-blur-sm md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">TaskFlow</p>

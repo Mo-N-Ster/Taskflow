@@ -63,6 +63,11 @@ export async function register(formData: FormData) {
 
 export async function logout() {
   const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
-  redirect("/login");
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    redirect("/dashboard?error=LOGOUT_FAILED");
+  }
+
+  redirect("/login?status=SIGNED_OUT");
 }

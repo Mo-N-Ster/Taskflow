@@ -109,7 +109,14 @@ test("user confirms their account and creates an isolated project", async ({ pag
   await expect(page.getByRole("link", { name: projectName })).toBeVisible();
 
   await page.getByRole("button", { name: "Déconnexion" }).click();
-  await expect(page).toHaveURL(/\/login$/);
+  await expect(page).toHaveURL(/\/login\?status=SIGNED_OUT$/);
+  await expect(page.getByRole("status")).toHaveText("Vous êtes maintenant déconnecté.");
+  await expect.poll(async () =>
+    (await page.context().cookies()).filter((cookie) => cookie.name.startsWith("sb-")).length,
+  ).toBe(0);
+
+  await page.goto("/dashboard");
+  await expect(page).toHaveURL(/\/login\?next=%2Fdashboard$/);
 
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Mot de passe").fill(password);
