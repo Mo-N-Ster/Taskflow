@@ -32,7 +32,24 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 | REQ-012 | rôle `observer` en lecture seule | `001_identity_and_multitenancy_rls.sql` |
 | REQ-013 | révocation d'un membre et protection du propriétaire | `001_identity_and_multitenancy_rls.sql` |
 | SEC-04, SEC-06, STPA UCA-01 | RLS et fonctions privées anti-récursion | test croisé de deux propriétaires, deux projets et un observateur |
-| REQ-001, REQ-003, SEC-14, SEC-17 | actions Auth SSR, confirmation Mailpit et cookies de session | `e2e/auth-project.spec.ts` |
+| REQ-001, REQ-003, SEC-14, SEC-17 | actions Auth SSR, confirmation Mailpit, cookies de session et déconnexion | `e2e/auth-project.spec.ts` |
+| SEC-16, SEC-24, STPA UCA-06 | pipeline GitHub Actions avec qualité, build, Supabase, RLS et E2E | exécution CI `32405554659` réussie |
+
+### Dossier de clôture du Jalon 2
+
+| Preuve | Référence | Résultat |
+| --- | --- | --- |
+| Implémentation identité et multi-tenant | commits `b357c5e` et `8f12904` | schéma, Auth SSR, projet persistant et tests E2E intégrés |
+| Tests unitaires | `pnpm test` | 11 tests réussis |
+| Tests d'isolation | `supabase/tests/001_identity_and_multitenancy_rls.sql` | 18 assertions réussies |
+| Parcours navigateur | `e2e/auth-project.spec.ts` | 4 scénarios Playwright réussis |
+| CI de référence | [GitHub Actions `32405554659`](https://github.com/Mo-N-Ster/Taskflow/actions/runs/32405554659) | pipeline complet réussi |
+| Préparation des callbacks par environnement | [PR #6](https://github.com/Mo-N-Ster/Taskflow/pull/6) | Preview et CI réussies |
+| Durcissement du logout | [PR #7](https://github.com/Mo-N-Ster/Taskflow/pull/7) | cookies supprimés et route protégée refusée après logout |
+| Supabase distant | projet `taskflow-staging`, migration `20260820193000` | migration locale et distante synchronisée |
+| Déploiement de validation | [TaskFlow sur Vercel](https://taskflow-eight-kappa.vercel.app) | accueil, login, inscription et parcours manuel accessibles |
+
+**Décision du 21 août 2026 :** les preuves automatisées et manuelles satisfont le critère de sortie du Jalon 2. Les invitations et les données de tâches restent hors périmètre et ouvrent le Jalon 3.
 
 ## Definition of Done
 

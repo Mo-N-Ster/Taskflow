@@ -48,4 +48,4 @@ pnpm build
 
 ## État actuel
 
-Le Jalon 1 fournit le shell responsive et ses écrans de démonstration. Le Jalon 2 est en cours : Supabase Auth, les profils, les projets, les memberships, la création persistée de projet et l'isolation RLS sont implémentés. Les tâches persistantes, invitations et mutations collaboratives restent réservées aux jalons suivants.
+Les Jalons 1 et 2 sont terminés. Supabase Auth, les profils, les projets, les memberships, la création persistée de projet et l'isolation RLS sont implémentés et validés par la CI, les tests RLS, les tests E2E et une Preview Vercel. Le prochain objectif est le Jalon 3 : invitations, tâches persistantes, assignation et changement de statut.

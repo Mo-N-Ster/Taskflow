@@ -25,9 +25,19 @@ Construire le shell applicatif, les écrans projets, tâches et dashboard avec d
 
 Ajouter Supabase Auth, les migrations initiales et les politiques RLS.
 
-**Statut : socle implémenté et validé localement.** Le schéma initial, Supabase Auth SSR, les routes protégées, la confirmation email, la création persistée de projet et les tests d'isolation sont implémentés. La clôture formelle reste conditionnée au passage de la CI et à la validation Preview.
+**Statut : terminé le 21 août 2026.** Le schéma initial, Supabase Auth SSR, les routes protégées, la confirmation email, la création persistée de projet, la déconnexion et les tests d'isolation sont implémentés. La CI, la Preview Vercel, la migration Supabase staging et le parcours manuel déployé ont été validés.
+
+- [x] migration initiale versionnée et appliquée sur Supabase staging
+- [x] authentification SSR, confirmation email et routes protégées
+- [x] création atomique des profils et memberships propriétaires
+- [x] politiques RLS validées par 18 assertions déterministes
+- [x] parcours Auth/projet validé par 4 scénarios E2E
+- [x] CI GitHub et Preview Vercel vertes avant fusion
+- [x] validation manuelle du parcours déployé et des journaux Auth
 
 **Sortie :** deux utilisateurs de projets différents ne peuvent pas lire les données l'un de l'autre.
+
+**Décision de passage :** le critère de sortie est satisfait. Le développement fonctionnel passe au Jalon 3 ; les travaux de production et d'observabilité restent suivis séparément au Jalon 6.
 
 ## Jalon 3 : vertical slice projet/tâche
 
