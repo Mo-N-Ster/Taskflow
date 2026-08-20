@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
+    "test:e2e": "pnpm build && node ./node_modules/@playwright/test/cli.js test",
+    "test:db": "pnpm dlx supabase test db",
     "supabase:start": "pnpm dlx supabase start",
     "supabase:stop": "pnpm dlx supabase stop",
     "supabase:reset": "pnpm dlx supabase db reset"

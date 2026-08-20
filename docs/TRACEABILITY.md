@@ -23,6 +23,16 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 | Exploitation | SEC-18, SEC-25, STPA UCA-05 | backup restore, dashboard, alerte testée, runbook | responsable opérations |
 | Conformité | SEC-23 | revue RGPD, fournisseurs, licences et politiques | propriétaire du produit |
 
+## Preuves du Jalon 2
+
+| Références | Implémentation | Preuve automatisée |
+| --- | --- | --- |
+| REQ-002 | trigger de création de `profiles`, lecture limitée à soi-même ou aux membres d'un projet commun | `001_identity_and_multitenancy_rls.sql` |
+| REQ-010, REQ-011 | `projects`, `project_members`, membership propriétaire automatique | `001_identity_and_multitenancy_rls.sql` |
+| REQ-012 | rôle `observer` en lecture seule | `001_identity_and_multitenancy_rls.sql` |
+| REQ-013 | révocation d'un membre et protection du propriétaire | `001_identity_and_multitenancy_rls.sql` |
+| SEC-04, SEC-06, STPA UCA-01 | RLS et fonctions privées anti-récursion | test croisé de deux propriétaires, deux projets et un observateur |
+
 ## Definition of Done
 
 - exigence et critère d'acceptation identifiés ;

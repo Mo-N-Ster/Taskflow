@@ -1,6 +1,14 @@
 import Link from "next/link";
 
-export default function NewProjectPage() {
+import { createProject } from "@/app/projects/actions";
+
+type NewProjectPageProps = {
+  searchParams: Promise<{ error?: string }>;
+};
+
+export default async function NewProjectPage({ searchParams }: NewProjectPageProps) {
+  const { error } = await searchParams;
+
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-10 text-slate-50">
       <div className="mx-auto max-w-2xl rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/60">
@@ -14,12 +22,20 @@ export default function NewProjectPage() {
           </Link>
         </div>
 
-        <form className="space-y-5">
+        {error ? (
+          <p role="alert" className="mb-5 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">
+            Le projet n’a pas pu être créé. Vérifiez les informations saisies.
+          </p>
+        ) : null}
+
+        <form action={createProject} className="space-y-5">
           <label className="block">
             <span className="mb-2 block text-sm text-slate-300">Nom du projet</span>
             <input
               type="text"
-              defaultValue="TaskFlow MVP"
+              name="name"
+              maxLength={120}
+              required
               className="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-slate-100 outline-none transition focus:border-cyan-400"
             />
           </label>
@@ -28,16 +44,17 @@ export default function NewProjectPage() {
             <span className="mb-2 block text-sm text-slate-300">Description</span>
             <textarea
               rows={4}
-              defaultValue="Suivi de livraison et pilotage des tâches de l'équipe produit."
+              name="description"
+              maxLength={2000}
               className="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-slate-100 outline-none transition focus:border-cyan-400"
             />
           </label>
 
           <label className="block">
             <span className="mb-2 block text-sm text-slate-300">Visibilité</span>
-            <select className="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-slate-100 outline-none transition focus:border-cyan-400">
-              <option>Privé</option>
-              <option>Public</option>
+            <select name="visibility" className="w-full rounded-2xl border border-slate-700 bg-slate-950/70 px-3 py-2.5 text-slate-100 outline-none transition focus:border-cyan-400">
+              <option value="private">Privé</option>
+              <option value="public">Public</option>
             </select>
           </label>
 

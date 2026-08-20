@@ -1,6 +1,6 @@
 # TaskFlow
 
-TaskFlow est une PWA collaborative qui aide une équipe à transformer une idée en livraison, suivre les tâches et rendre visible la contribution de chacun.
+TaskFlow est une application collaborative destinée à devenir une PWA. Elle aide une équipe à transformer une idée en livraison, suivre les tâches et rendre visible la contribution de chacun.
 
 Le projet est un parcours d'apprentissage CTO et DevOps. La documentation est la source de référence avant le code : elle décrit le produit, les décisions, les risques et les critères de validation.
 
@@ -48,4 +48,4 @@ pnpm build
 
 ## État actuel
 
-Le socle Next.js 15, TypeScript, App Router, Tailwind CSS et ESLint est installé. Le Jalon 1 fournit un shell produit responsive avec dashboard, projets, tâches, création de projet, inscription, connexion et confirmation email en données de démonstration. Supabase, l'authentification réelle et les autorisations serveur sont réservés au Jalon 2.
+Le Jalon 1 fournit le shell responsive et ses écrans de démonstration. Le Jalon 2 est en cours : Supabase Auth, les profils, les projets, les memberships, la création persistée de projet et l'isolation RLS sont implémentés. Les tâches persistantes, invitations et mutations collaboratives restent réservées aux jalons suivants.

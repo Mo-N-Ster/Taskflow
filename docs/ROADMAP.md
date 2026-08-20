@@ -25,6 +25,8 @@ Construire le shell applicatif, les écrans projets, tâches et dashboard avec d
 
 Ajouter Supabase Auth, les migrations initiales et les politiques RLS.
 
+**Statut : socle implémenté et validé localement.** Le schéma initial, Supabase Auth SSR, les routes protégées, la confirmation email, la création persistée de projet et les tests d'isolation sont implémentés. La clôture formelle reste conditionnée au passage de la CI et à la validation Preview.
+
 **Sortie :** deux utilisateurs de projets différents ne peuvent pas lire les données l'un de l'autre.
 
 ## Jalon 3 : vertical slice projet/tâche

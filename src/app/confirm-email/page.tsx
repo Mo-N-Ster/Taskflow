@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-export default function ConfirmEmailPage() {
+type ConfirmEmailPageProps = {
+  searchParams: Promise<{ email?: string }>;
+};
+
+export default async function ConfirmEmailPage({ searchParams }: ConfirmEmailPageProps) {
+  const { email } = await searchParams;
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10 text-slate-50">
       <section className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/80 p-6 text-center shadow-2xl shadow-slate-950/60">
@@ -10,13 +16,11 @@ export default function ConfirmEmailPage() {
         <p className="mt-3 text-sm leading-6 text-slate-400">
           Un lien de confirmation vient d’être envoyé. Il vous permettra d’activer votre session et d’accéder à votre dashboard.
         </p>
+        {email ? <p className="mt-2 text-sm text-slate-300">Adresse : {email}</p> : null}
         <div className="mt-6 flex flex-col gap-3">
           <Link href="/login" className="rounded-2xl bg-cyan-400 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
             Retour à la connexion
           </Link>
-          <button type="button" className="rounded-2xl border border-slate-700 px-4 py-3 text-sm text-slate-200 transition hover:border-slate-500">
-            Renvoyer le lien
-          </button>
         </div>
       </section>
     </main>

@@ -31,6 +31,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 `SUPABASE_SERVICE_ROLE_KEY` est serveur uniquement. Les valeurs `NEXT_PUBLIC_*` sont publiques par conception et ne doivent jamais être utilisées pour autoriser une action.
 
+Après une modification de `supabase/config.toml` ou d'un template Auth, exécuter `pnpm supabase:stop` puis `pnpm supabase:start` : un simple reset de base ne recrée pas le service Auth.
+
 ## Base locale
 
 Les migrations sont appliquées avec la Supabase CLI. Le seed local ne contient aucune donnée personnelle réelle. Une réinitialisation locale doit pouvoir être exécutée sans toucher aux environnements distants.
@@ -56,6 +58,7 @@ Les tests utilisent des comptes synthétiques distincts : propriétaire, chef de
 5. Installer les dépendances avec `pnpm install`.
 6. Lancer `pnpm dev`.
 7. Vérifier `pnpm lint`, `pnpm typecheck` et `pnpm test`.
+8. Vérifier les politiques RLS avec `pnpm test:db`.
 
 ## Reset et incident local
 

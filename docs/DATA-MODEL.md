@@ -26,6 +26,12 @@ tasks      1---N evaluations
 | `evaluations` | Évaluation d'un livrable | `id`, `task_id`, `reviewer_id`, `member_id`, `score`, `comment` |
 | `activity_events` | Historique fonctionnel | `id`, `project_id`, `actor_id`, `event_type`, `payload`, `created_at` |
 
+## Socle implémenté au Jalon 2
+
+La migration `20260820193000_initial_identity_and_multitenancy.sql` crée `profiles`, `projects` et `project_members`. Un trigger crée le profil lors de l'inscription Supabase et un second crée atomiquement le membership `owner` avec chaque projet.
+
+La valeur `visibility = public` est persistée, mais elle n'accorde pas encore de lecture anonyme : tant que le contrat de publication publique n'est pas défini, seuls les membres peuvent lire un projet. Le transfert de propriété est également bloqué jusqu'à l'ajout d'un workflow atomique dédié.
+
 Les tables de session, invitation et reset sont gérées par le fournisseur d'identité lorsque c'est possible. Elles doivent néanmoins respecter des dates d'expiration, une révocation et une consommation unique.
 
 ## Règles d'intégrité
@@ -48,7 +54,7 @@ Chaque table métier doit avoir RLS activé. La politique minimale est : un util
 | Modifier une tâche assignée | Oui | Oui | Oui | Non |
 | Noter un livrable | Oui | Oui | Non | Non |
 
-La matrice sera traduite en politiques SQL et testée avec des utilisateurs de rôles différents avant l'ouverture de données réelles.
+La matrice du socle projets/memberships est traduite en politiques SQL. Les règles liées aux tâches seront ajoutées avec leur schéma au Jalon 3.
 
 Les tests RLS doivent couvrir les lectures, insertions, mises à jour et suppressions pour chaque rôle, ainsi que les cas de projet supprimé, membre révoqué et session expirée. Une policy permissive par défaut est interdite.
 
