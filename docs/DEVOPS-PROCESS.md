@@ -6,30 +6,37 @@ Ce document décrit le parcours d'apprentissage et la chaîne de livraison de Ta
 
 1. Une fonctionnalité commence par un besoin utilisateur et un critère d'acceptation.
 2. Toute modification passe par une branche et une pull request.
-3. La CI doit être verte avant la fusion dans `dev` ou `main`.
+3. La CI doit être verte avant la fusion dans `dev` ou la branche principale.
 4. Les secrets ne sont jamais commités ; seul `.env.example` est versionné.
 5. Les migrations de base de données sont versionnées avec le code.
 6. Une décision technique importante est documentée avec son contexte et ses conséquences.
 7. Une fonctionnalité n'est livrée que si sa sécurité, sa traçabilité et son exploitation sont vérifiables.
 
-## Flux Git proposé
+## Flux Git
 
-- `main` : production, protégée, déployée sur Vercel.
-- `dev` : intégration, déploiement preview.
+- `master` : branche principale actuelle, déployée sur la cible Vercel Production.
+- `dev` : branche d'intégration cible, à créer lorsque le rythme du Jalon 3 le justifiera.
 - `feature/<nom>` : développement d'une fonctionnalité.
 - `fix/<nom>` : correction ciblée.
+- `docs/<nom>` : documentation et décisions sans changement fonctionnel.
 
-Flux normal :
+Flux appliqué jusqu'à la clôture du Jalon 2 :
 
 ```text
-feature/* -> Pull Request -> dev -> validation produit -> main -> production
+feature/* | fix/* | docs/* -> Pull Request -> Preview -> validation -> master
 ```
 
-La protection des branches devra imposer au minimum une CI verte et une revue avant fusion.
+Flux cible lorsque `dev` sera créée :
+
+```text
+feature/* -> Pull Request -> dev -> validation produit -> master -> production
+```
+
+La protection de `master` doit imposer au minimum une CI verte et une revue avant fusion. Un éventuel renommage de `master` en `main` sera une opération dédiée afin de mettre à jour GitHub, Vercel, la CI et les clones locaux sans ambiguïté.
 
 ## CI et CD
 
-Le workflow `.github/workflows/ci.yml` s'exécute sur les pushs vers `dev` et `main`, ainsi que sur les pull requests. Il réalise :
+Le workflow `.github/workflows/ci.yml` s'exécute sur les pushs vers `master`, `main` et `dev`, ainsi que sur les pull requests. Il réalise :
 
 - installation reproductible avec `pnpm install --frozen-lockfile` ;
 - lint avec `pnpm lint` ;
@@ -40,21 +47,23 @@ Le workflow `.github/workflows/ci.yml` s'exécute sur les pushs vers `dev` et `m
 - scan de secrets et audit des dépendances ;
 - production d'un artefact identifié par commit.
 
-Le déploiement suit la chaîne : **tests -> vérifications sécurité -> build -> Preview -> validation -> production**. Une fusion vers `main` ne doit pas contourner les contrôles. Le déploiement de production est automatique uniquement après les protections de branche, les validations obligatoires et l'approbation définie par le niveau de risque.
+Le déploiement suit la chaîne : **tests -> vérifications sécurité -> build -> Preview -> validation -> production**. Une fusion vers la branche principale ne doit pas contourner les contrôles. Le déploiement de production est automatique uniquement après les protections de branche, les validations obligatoires et l'approbation définie par le niveau de risque.
 
 Le pipeline minimal obligatoire est : `pnpm install --frozen-lockfile` -> lint -> typecheck -> tests unitaires/intégration -> audit dépendances -> scan secrets -> build. Les tests E2E, les tests RLS, le smoke test Preview et le déploiement production sont ajoutés dès que Supabase et Vercel sont connectés. Les outils et preuves sont détaillés dans [la stratégie de tests](TEST-STRATEGY.md).
 
 L'audit de dépendances doit produire un ticket pour chaque vulnérabilité non corrigée. Une mise à niveau majeure, comme le passage éventuel de Next.js 15 à 16, est traitée séparément avec tests de compatibilité et rollback.
 
-## CD cible
+## CD actuel et cible
 
-Vercel sera connecté au dépôt GitHub :
+Vercel est connecté au dépôt GitHub :
 
 - pull request : déploiement Preview ;
-- `dev` : environnement d'intégration ;
-- `main` : production.
+- `master` : cible Vercel Production ;
+- `dev` : environnement d'intégration à activer ultérieurement.
 
-Les variables d'environnement seront configurées dans Vercel par environnement. Les clés serveur, notamment Resend et Sentry, ne doivent jamais utiliser le préfixe `NEXT_PUBLIC_`.
+Les variables Supabase publiques sont configurées dans Vercel pour Development, Preview et Production. `NEXT_PUBLIC_APP_URL` est limitée à Production ; les Previews utilisent leur URL Vercel propre. Les clés serveur, notamment Resend et Sentry, ne doivent jamais utiliser le préfixe `NEXT_PUBLIC_`.
+
+À la clôture du Jalon 2, Preview et Production Vercel utilisent toutes deux Supabase staging. Cette configuration est volontairement limitée à l'évaluation. Elle ne satisfait pas encore la séparation exigée pour des utilisateurs réels ; le projet Supabase production, les sauvegardes, le rollback et l'observabilité restent des critères du jalon de mise en production.
 
 Les migrations Supabase sont appliquées de façon versionnée, avec backup vérifié avant changement critique et procédure de restauration testée. Les logs de déploiement et les métriques de release sont conservés avec le SHA du commit.
 
@@ -82,23 +91,29 @@ Statut : socle applicatif terminé ; gouvernance en cours.
 
 ### Jalon 1 : produit minimal visible
 
-Créer la première page TaskFlow et son layout responsive, sans backend. Sortie : une page de présentation du dashboard avec composants réutilisables et critères d'acceptation écrits.
+**Statut : terminé.** La première page TaskFlow et son layout responsive fournissent un parcours de démonstration sans backend.
 
 ### Jalon 2 : base de données et authentification
 
-Créer le projet Supabase, versionner les migrations, définir les tables utilisateurs/projets/membres et écrire les premières politiques RLS. Sortie : un utilisateur ne peut lire que les données autorisées par son appartenance au projet.
+**Statut : terminé le 21 août 2026.** Le projet Supabase staging, les migrations, les tables utilisateurs/projets/membres, l'Auth SSR et les premières politiques RLS sont validés par la CI, la Preview et les tests d'isolation. Sortie atteinte : un utilisateur ne peut lire que les données autorisées par son appartenance au projet.
 
 ### Jalon 3 : vertical slice projet/tâche
 
 Livrer le flux complet documenté : inscription confirmée, création d'un projet, invitation, création d'une tâche, attribution et modification de statut. Sortie : tests d'intégration, E2E et RLS du parcours principal.
 
-### Jalon 4 : qualité et observabilité
+### Jalon 4 : collaboration et activité
 
-Ajouter les tests, Sentry, les métriques Web Vitals et les alertes utiles. Sortie : une erreur simulée est visible et exploitable sans exposer de données sensibles.
+Ajouter commentaires, journal d'activité et premières notifications in-app. Sortie : une modification importante est visible dans son contexte et son historique.
 
-### Jalon 5 : mise en production contrôlée
+### Jalon 5 : évaluation contrôlée
 
-Configurer Vercel, les domaines, les environnements et la protection des branches. Sortie : déploiement reproductible de `main` avec procédure de rollback documentée.
+Ajouter les notes de livrables, leur historique et leurs règles de visibilité. Sortie : une évaluation est traçable, explicable, datée et accessible uniquement aux personnes autorisées.
+
+### Jalon 6 : production et observabilité
+
+**Statut : partiellement anticipé.** Vercel et GitHub sont connectés et les déploiements Preview/Production sont reproductibles. Restent à réaliser : Supabase production séparé, protection formelle de la branche principale, domaine éventuel, sauvegardes, procédure de rollback et preuves d'observabilité.
+
+Sortie cible : déploiement reproductible de la branche principale avec procédure de rollback documentée.
 
 ## Rituel de chaque fonctionnalité
 

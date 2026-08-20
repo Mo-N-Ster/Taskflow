@@ -10,6 +10,12 @@
 
 La base de production n'est jamais utilisée pour développer ou tester manuellement.
 
+### État déployé au 21 août 2026
+
+Le projet Vercel `taskflow` est connecté à GitHub et déploie les pull requests en Preview ainsi que `master` sur la cible Vercel Production. Les deux cibles utilisent temporairement le projet Supabase `taskflow-staging` (`ylaobnddeyhxnvfzkpsi`). Le déploiement de `master` constitue donc une release d'évaluation publique, pas encore une production avec données utilisateur réelles.
+
+Avant l'ouverture à des utilisateurs réels, un projet Supabase production distinct doit être créé, migré, sauvegardé et configuré uniquement dans l'environnement Vercel Production. Les variables Preview doivent rester liées au staging.
+
 ## Prérequis
 
 - Node.js LTS et Corepack ;
