@@ -1,4 +1,10 @@
-import { getProjectProgress, type ProjectTask, type TaskStatus } from "../lib/taskflow";
+import {
+  getProjectProgress,
+  getTaskStatusCounts,
+  getTaskSummary,
+  type ProjectTask,
+  type TaskStatus,
+} from "../lib/taskflow";
 
 const tasks: ProjectTask[] = [
   { id: "T-101", title: "Définir le scope MVP", status: "done", assignee: "Marie", priority: "High" },
@@ -25,6 +31,8 @@ const statusClasses: Record<TaskStatus, string> = {
 
 export default function Home() {
   const completion = getProjectProgress(tasks);
+  const statusCounts = getTaskStatusCounts(tasks);
+  const summary = getTaskSummary(tasks);
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-50">
@@ -47,7 +55,7 @@ export default function Home() {
         <section className="mb-8 grid gap-4 md:grid-cols-4">
           {[
             { label: "Progression", value: `${completion}%`, accent: "text-cyan-300" },
-            { label: "Tâches actives", value: "12", accent: "text-violet-300" },
+            { label: "Tâches actives", value: String(summary.inProgress + summary.review), accent: "text-violet-300" },
             { label: "Membres", value: "6", accent: "text-emerald-300" },
             { label: "Retards", value: "2", accent: "text-amber-300" },
           ].map((stat) => (
@@ -72,6 +80,20 @@ export default function Home() {
 
             <div className="mb-6 overflow-hidden rounded-full bg-slate-800">
               <div className="h-2.5 rounded-full bg-gradient-to-r from-cyan-400 via-violet-400 to-emerald-400" style={{ width: `${completion}%` }} />
+            </div>
+
+            <div className="mb-6 grid gap-3 sm:grid-cols-4">
+              {[
+                { label: "À faire", value: statusCounts.todo },
+                { label: "En cours", value: statusCounts.in_progress },
+                { label: "En relecture", value: statusCounts.review },
+                { label: "Terminées", value: statusCounts.done },
+              ].map((item) => (
+                <div key={item.label} className="rounded-2xl border border-slate-800 bg-slate-950/70 p-3 text-center">
+                  <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{item.label}</p>
+                  <p className="mt-2 text-2xl font-semibold text-white">{item.value}</p>
+                </div>
+              ))}
             </div>
 
             <div className="space-y-3">
