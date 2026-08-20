@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { loginInputSchema, registerInputSchema } from "@/lib/auth";
+import { getAppUrl } from "@/lib/app-url";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 function value(formData: FormData, name: string) {
@@ -43,7 +44,7 @@ export async function register(formData: FormData) {
   }
 
   const supabase = await createSupabaseServerClient();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const appUrl = getAppUrl();
   const { error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
