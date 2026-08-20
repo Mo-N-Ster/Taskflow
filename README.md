@@ -26,10 +26,11 @@ Le projet est un parcours d'apprentissage CTO et DevOps. La documentation est la
 
 ## Démarrage local
 
-Prérequis : Node.js LTS et npm.
+Prérequis : Node.js LTS, Corepack et pnpm.
 
 ```bash
-corepack pnpm install
+corepack enable
+pnpm install
 pnpm dev
 ```
 
@@ -47,4 +48,4 @@ pnpm build
 
 ## État actuel
 
-Le socle Next.js 15, TypeScript, App Router, Tailwind CSS et ESLint est installé. L'écran métier, Supabase et l'authentification ne sont pas encore implémentés. Les règles de sécurité et d'exploitation sont documentées avant le prochain jalon d'implémentation.
+Le socle Next.js 15, TypeScript, App Router, Tailwind CSS et ESLint est installé. Le Jalon 1 fournit un shell produit responsive avec dashboard, projets, tâches, création de projet, inscription, connexion et confirmation email en données de démonstration. Supabase, l'authentification réelle et les autorisations serveur sont réservés au Jalon 2.

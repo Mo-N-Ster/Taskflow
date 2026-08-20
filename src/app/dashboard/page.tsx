@@ -51,7 +51,7 @@ export default function DashboardPage() {
 
             <div className="space-y-4">
               {projects.map((project) => (
-                <div key={project.name} className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
+                <Link href={`/projects/${project.name.toLowerCase().replaceAll(" ", "-")}`} key={project.name} className="block rounded-2xl border border-slate-800 bg-slate-950/70 p-4 transition hover:border-cyan-400/40">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-lg font-medium text-white">{project.name}</p>
@@ -65,7 +65,7 @@ export default function DashboardPage() {
                   <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-800">
                     <div className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-violet-400 to-emerald-400" style={{ width: `${project.progress}%` }} />
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

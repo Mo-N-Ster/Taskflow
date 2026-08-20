@@ -67,10 +67,13 @@ export default function Home() {
               Sprint R-18
             </div>
             <Link href="/projects/new" className="rounded-full bg-cyan-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-cyan-300">
-              + Nouvelle tâche
+              + Nouveau projet
             </Link>
             <Link href="/dashboard" className="rounded-full border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 transition hover:border-slate-500">
               Voir dashboard
+            </Link>
+            <Link href="/login" className="text-sm text-slate-300 transition hover:text-white">
+              Connexion
             </Link>
           </div>
         </header>
@@ -93,7 +96,7 @@ export default function Home() {
           <aside className="rounded-3xl border border-slate-800 bg-slate-900 p-4">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-sm uppercase tracking-[0.18em] text-slate-400">Projets</h2>
-              <button className="text-xs text-cyan-300">+ Nouveau</button>
+              <Link href="/projects/new" className="text-xs text-cyan-300 hover:text-cyan-200">+ Nouveau</Link>
             </div>
 
             <div className="space-y-3">
