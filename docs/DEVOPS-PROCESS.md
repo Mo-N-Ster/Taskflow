@@ -31,9 +31,9 @@ La protection des branches devra imposer au minimum une CI verte et une revue av
 
 Le workflow `.github/workflows/ci.yml` s'exécute sur les pushs vers `dev` et `main`, ainsi que sur les pull requests. Il réalise :
 
-- installation reproductible avec `npm ci` ;
-- lint avec `npm run lint` ;
-- build de production avec `npm run build` ;
+- installation reproductible avec `pnpm install --frozen-lockfile` ;
+- lint avec `pnpm lint` ;
+- build de production avec `pnpm build` ;
 - tests unitaires et d'intégration dès qu'ils existent ;
 - lint et vérification TypeScript ;
 - build de production ;
@@ -42,7 +42,7 @@ Le workflow `.github/workflows/ci.yml` s'exécute sur les pushs vers `dev` et `m
 
 Le déploiement suit la chaîne : **tests -> vérifications sécurité -> build -> Preview -> validation -> production**. Une fusion vers `main` ne doit pas contourner les contrôles. Le déploiement de production est automatique uniquement après les protections de branche, les validations obligatoires et l'approbation définie par le niveau de risque.
 
-Le pipeline minimal obligatoire est : `npm ci` -> lint -> typecheck -> tests unitaires/intégration -> audit dépendances -> scan secrets -> build. Les tests E2E, les tests RLS, le smoke test Preview et le déploiement production sont ajoutés dès que Supabase et Vercel sont connectés. Les outils et preuves sont détaillés dans [la stratégie de tests](TEST-STRATEGY.md).
+Le pipeline minimal obligatoire est : `pnpm install --frozen-lockfile` -> lint -> typecheck -> tests unitaires/intégration -> audit dépendances -> scan secrets -> build. Les tests E2E, les tests RLS, le smoke test Preview et le déploiement production sont ajoutés dès que Supabase et Vercel sont connectés. Les outils et preuves sont détaillés dans [la stratégie de tests](TEST-STRATEGY.md).
 
 L'audit de dépendances doit produire un ticket pour chaque vulnérabilité non corrigée. Une mise à niveau majeure, comme le passage éventuel de Next.js 15 à 16, est traitée séparément avec tests de compatibilité et rollback.
 
@@ -70,8 +70,8 @@ Statut : socle applicatif terminé ; gouvernance en cours.
 
 - [x] Next.js 15 avec App Router et TypeScript
 - [x] Tailwind CSS et ESLint
-- [x] `npm run lint` réussi localement
-- [x] `npm run build` réussi localement
+- [x] `pnpm lint` réussi localement
+- [x] `pnpm build` réussi localement
 - [x] CI GitHub Actions initiale
 - [x] Dependabot hebdomadaire
 - [x] modèle `.env.example`

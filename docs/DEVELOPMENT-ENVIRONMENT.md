@@ -12,7 +12,7 @@ La base de production n'est jamais utilisée pour développer ou tester manuelle
 
 ## Prérequis
 
-- Node.js LTS et npm ;
+- Node.js LTS et Corepack ;
 - Docker Desktop pour Supabase local ;
 - Supabase CLI ;
 - Git et GitHub ;
@@ -49,12 +49,13 @@ Les tests utilisent des comptes synthétiques distincts : propriétaire, chef de
 
 ## Procédure de démarrage
 
-1. Copier `.env.example` vers `.env.local`.
-2. Démarrer Supabase local.
-3. Appliquer les migrations et le seed.
-4. Installer les dépendances avec `npm ci`.
-5. Lancer `npm run dev`.
-6. Vérifier `npm run lint`, `npm run typecheck` et les tests.
+1. Activer Corepack avec `corepack enable`.
+2. Copier `.env.example` vers `.env.local`.
+3. Démarrer Supabase local avec `pnpm supabase:start`.
+4. Appliquer les migrations et le seed avec `pnpm supabase:reset`.
+5. Installer les dépendances avec `pnpm install`.
+6. Lancer `pnpm dev`.
+7. Vérifier `pnpm lint`, `pnpm typecheck` et `pnpm test`.
 
 ## Reset et incident local
 

@@ -1,0 +1,1 @@
+-- Seed volontairement vide : les tests utiliseront des fixtures synthétiques.

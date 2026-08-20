@@ -29,8 +29,8 @@ Le projet est un parcours d'apprentissage CTO et DevOps. La documentation est la
 Prérequis : Node.js LTS et npm.
 
 ```bash
-npm ci
-npm run dev
+corepack pnpm install
+pnpm dev
 ```
 
 Ouvrir ensuite http://localhost:3000.
@@ -38,8 +38,11 @@ Ouvrir ensuite http://localhost:3000.
 Commandes de contrôle :
 
 ```bash
-npm run lint
-npm run build
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm test:e2e
+pnpm build
 ```
 
 ## État actuel

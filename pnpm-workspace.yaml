@@ -1,0 +1,4 @@
+minimumReleaseAge: 360
+allowBuilds:
+  sharp: true
+  unrs-resolver: true
