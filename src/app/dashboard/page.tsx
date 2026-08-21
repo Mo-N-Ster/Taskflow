@@ -23,6 +23,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     .select("id, name, visibility, owner_id")
     .order("created_at", { ascending: false });
   const projects = (data ?? []) as ProjectSummary[];
+  const { count: activeTaskCount } = await supabase
+    .from("tasks")
+    .select("id", { count: "exact", head: true })
+    .neq("status", "done");
 
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-50">
@@ -57,8 +61,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </article>
           <article className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
             <p className="text-sm text-slate-400">Tâches actives</p>
-            <p className="mt-3 text-3xl font-semibold text-slate-500">—</p>
-            <p className="mt-2 text-xs text-slate-500">Disponible au Jalon 3</p>
+            <p className="mt-3 text-3xl font-semibold text-emerald-300">{activeTaskCount ?? 0}</p>
           </article>
         </section>
 

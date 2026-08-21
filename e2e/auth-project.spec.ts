@@ -125,3 +125,79 @@ test("user confirms their account and creates an isolated project", async ({ pag
   await expect(page).toHaveURL(/\/dashboard$/);
   await expect(page.getByRole("link", { name: projectName })).toBeVisible();
 });
+
+test("owner invites a member who accepts an assigned task and changes its status", async ({ page, request, baseURL }) => {
+  test.setTimeout(90_000);
+  const uniqueId = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const ownerEmail = `owner-${uniqueId}@example.com`;
+  const memberEmail = `member-${uniqueId}@example.com`;
+  const password = "Synthetic-password-42!";
+  const projectName = `Collaboration ${uniqueId}`;
+  const taskName = `Tâche assignée ${uniqueId}`;
+  const applicationUrl = new URL(baseURL ?? "http://127.0.0.1:3100");
+
+  async function registerAndConfirm(email: string, firstName: string) {
+    await page.goto("/register");
+    await page.getByLabel("Prénom").fill(firstName);
+    await page.getByLabel("Nom", { exact: true }).fill("E2E");
+    await page.getByLabel("Email professionnel").fill(email);
+    await page.getByLabel("Mot de passe", { exact: true }).fill(password);
+    await page.getByLabel("Confirmer", { exact: true }).fill(password);
+    await page.getByRole("button", { name: "Créer mon compte" }).click();
+    const confirmationUrl = new URL(await getConfirmationUrl(request, email));
+    confirmationUrl.protocol = applicationUrl.protocol;
+    confirmationUrl.hostname = applicationUrl.hostname;
+    confirmationUrl.port = applicationUrl.port;
+    const confirmationResponse = await page.request.get(confirmationUrl.toString(), { maxRedirects: 0 });
+    expect(confirmationResponse.status()).toBe(307);
+    await page.goto("/dashboard");
+    await expect(page).toHaveURL(/\/dashboard$/);
+  }
+
+  await registerAndConfirm(ownerEmail, "Owner");
+  await page.getByRole("link", { name: "+ Nouveau projet" }).click();
+  await page.getByLabel("Nom du projet").fill(projectName);
+  await page.getByRole("button", { name: "Créer le projet" }).click();
+  await expect(page).toHaveURL(/\/projects\/[0-9a-f-]{36}$/);
+  const projectPath = new URL(page.url()).pathname;
+
+  await page.getByLabel("Email du membre").fill(memberEmail);
+  await page.getByLabel("Rôle").selectOption("member");
+  await page.getByRole("button", { name: "Créer le lien d’invitation" }).click();
+  const invitationText = await page.getByRole("status").textContent();
+  const invitationPath = invitationText?.match(/\/invitations\/accept\?token=[a-f0-9]{64}/)?.[0];
+  expect(invitationPath).toBeTruthy();
+
+  await page.goto("/dashboard");
+  await page.getByRole("button", { name: "Déconnexion" }).click();
+  await registerAndConfirm(memberEmail, "Member");
+  await page.goto(invitationPath!);
+  await page.getByRole("button", { name: "Accepter l’invitation" }).click();
+  await expect(page.getByRole("status")).toContainText("Invitation acceptée");
+
+  await page.goto("/dashboard");
+  await page.getByRole("button", { name: "Déconnexion" }).click();
+  await page.getByLabel("Email").fill(ownerEmail);
+  await page.getByLabel("Mot de passe").fill(password);
+  await page.getByRole("button", { name: "Se connecter" }).click();
+  await expect(page).toHaveURL(/\/dashboard$/);
+  await page.goto(projectPath);
+  await page.getByLabel("Titre").fill(taskName);
+  await page.getByLabel("Priorité").selectOption("high");
+  await page.getByRole("checkbox", { name: "Member E2E" }).check();
+  await page.getByRole("button", { name: "Créer la tâche" }).click();
+  await expect(page.getByRole("heading", { name: taskName })).toBeVisible();
+
+  await page.goto("/dashboard");
+  await page.getByRole("button", { name: "Déconnexion" }).click();
+  await page.getByLabel("Email").fill(memberEmail);
+  await page.getByLabel("Mot de passe").fill(password);
+  await page.getByRole("button", { name: "Se connecter" }).click();
+  await expect(page).toHaveURL(/\/dashboard$/);
+  await page.getByRole("link", { name: projectName }).click();
+  await page.getByRole("link", { name: taskName }).click();
+  await page.getByLabel("Nouveau statut").selectOption("done");
+  await page.getByRole("button", { name: "Mettre à jour" }).click();
+  await expect(page.getByRole("status")).toHaveText("Statut mis à jour.");
+  await expect(page.getByRole("definition").filter({ hasText: "Terminée" })).toBeVisible();
+});
