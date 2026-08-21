@@ -30,6 +30,10 @@ Les messages retournés au navigateur sont génériques. Les logs utilisent `req
 | `updateTaskStatus` | taskId, status | Owner/manager ou membre assigné | `task.status_changed` |
 | `addComment` | taskId, body | Membre du projet non observateur | `comment.created` |
 
+### Contrats livrés au Jalon 3
+
+`inviteMember`, `acceptInvitation`, `createTask` et `updateTaskStatus` sont implémentés par Server Actions. L'acceptation et la création atomique de tâche utilisent respectivement les fonctions PostgreSQL `accept_project_invitation` et `create_project_task`. Les jetons bruts ne sont jamais persistés et les refus d'autorisation sont ramenés à des codes génériques dans l'interface.
+
 ## Règles de validation
 
 | Champ | Règle MVP |

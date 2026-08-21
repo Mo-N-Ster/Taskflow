@@ -51,6 +51,16 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 
 **Décision du 21 août 2026 :** les preuves automatisées et manuelles satisfont le critère de sortie du Jalon 2. Les invitations et les données de tâches restent hors périmètre et ouvrent le Jalon 3.
 
+### Preuves en préparation pour le Jalon 3
+
+| Exigence | Implémentation | Preuve locale |
+| --- | --- | --- |
+| REQ-011, SEC-19 | invitations hashées, expirantes, liées à l'email et à usage unique | `002_jalon_3_tasks_and_invitations_rls.sql`, scénario Playwright multi-utilisateur |
+| REQ-012, SEC-06 | observateur en lecture seule et contrôles de rôle côté serveur/RLS | tests négatifs pgTAP |
+| REQ-020, REQ-021 | tâche persistante et assignations atomiques | `create_project_task`, UI projet et E2E |
+| REQ-022 | changement de statut par membre assigné et journalisation | trigger `tasks_log_activity`, pgTAP et E2E |
+| REQ-024 | avancement calculé depuis les tâches terminées | carte d'avancement projet et assertion SQL |
+
 ## Definition of Done
 
 - exigence et critère d'acceptation identifiés ;
