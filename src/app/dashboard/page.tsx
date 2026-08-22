@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { logout } from "@/app/auth/actions";
+import { acceptInvitationFromDashboard, declineInvitationFromDashboard } from "@/app/projects/collaboration-actions";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type ProjectSummary = {
@@ -11,11 +12,13 @@ type ProjectSummary = {
 };
 
 type DashboardPageProps = {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; status?: string }>;
 };
 
+type PendingInvitation = { id: string; project_id: string; project_name: string; role: string; expires_at: string };
+
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
-  const { error } = await searchParams;
+  const { error, status } = await searchParams;
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data } = await supabase
@@ -27,6 +30,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     .from("tasks")
     .select("id", { count: "exact", head: true })
     .neq("status", "done");
+  const { data: invitationData } = await supabase.rpc("list_my_pending_invitations");
+  const invitations = (invitationData ?? []) as PendingInvitation[];
 
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-50">
@@ -36,6 +41,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             La déconnexion a échoué. Veuillez réessayer.
           </p>
         ) : null}
+        {error && error !== "LOGOUT_FAILED" ? <p role="alert" className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">L’action sur l’invitation n’a pas pu être effectuée.</p> : null}
+        {status === "INVITATION_DECLINED" ? <p role="status" className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">Invitation refusée.</p> : null}
+        {status === "PROJECT_LEFT" ? <p role="status" className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">Vous avez quitté le projet. Vos anciennes assignations ont été libérées.</p> : null}
         <header className="mb-6 flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/80 p-5 backdrop-blur-sm md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">TaskFlow</p>
@@ -64,6 +72,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             <p className="mt-3 text-3xl font-semibold text-emerald-300">{activeTaskCount ?? 0}</p>
           </article>
         </section>
+
+        {invitations.length > 0 ? <section className="mt-8 rounded-3xl border border-cyan-500/30 bg-cyan-500/10 p-5">
+          <h2 className="text-lg font-semibold text-cyan-100">Invitations en attente</h2>
+          <div className="mt-4 space-y-3">{invitations.map((invitation) => <article key={invitation.id} className="rounded-2xl border border-cyan-500/20 bg-slate-950/70 p-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-medium text-white">{invitation.project_name}</p><p className="mt-1 text-xs text-slate-400">Rôle : {invitation.role} · expire le {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(invitation.expires_at))}</p></div><div className="flex gap-2">
+              <form action={acceptInvitationFromDashboard}><input type="hidden" name="invitationId" value={invitation.id} /><button className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950">Accepter</button></form>
+              <form action={declineInvitationFromDashboard}><input type="hidden" name="invitationId" value={invitation.id} /><button className="rounded-xl border border-slate-600 px-4 py-2 text-sm text-slate-200">Refuser</button></form>
+            </div></div>
+          </article>)}</div>
+        </section> : null}
 
         <section className="mt-8 rounded-3xl border border-slate-800 bg-slate-900 p-5">
           <h2 className="text-lg font-semibold text-white">Mes projets</h2>

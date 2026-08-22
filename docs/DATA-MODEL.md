@@ -40,6 +40,8 @@ La migration `20260821090000_jalon_3_vertical_slice.sql` ajoute `project_invitat
 
 La fonction `create_project_task` crée atomiquement la tâche et ses assignations. Les triggers contrôlent que chaque personne assignée est membre actif non observateur et journalisent la création ainsi que les changements de statut. Un membre assigné peut uniquement changer le statut ; les champs de pilotage restent réservés au propriétaire et au chef de projet.
 
+La migration `20260822130000_invitation_notifications_and_reassignment.sql` rend la réinvitation idempotente, expose les invitations en attente uniquement au compte correspondant et ajoute acceptation/refus depuis le dashboard. Le départ d'un membre supprime automatiquement ses assignations sans supprimer les tâches ; owner et chef de projet peuvent ensuite les réassigner atomiquement.
+
 ## Règles d'intégrité
 
 - Les identifiants sont des UUID et les dates sont stockées en UTC.

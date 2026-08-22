@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { createTask, inviteMember } from "@/app/projects/collaboration-actions";
+import { createTask, inviteMember, leaveProject } from "@/app/projects/collaboration-actions";
 import { taskPriorityLabels, taskStatusLabels } from "@/lib/collaboration";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-type Props = { params: Promise<{ projectId: string }>; searchParams: Promise<{ error?: string; status?: string; invitation?: string }> };
+type Props = { params: Promise<{ projectId: string }>; searchParams: Promise<{ error?: string; status?: string; invitation?: string; email?: string }> };
 
 export default async function ProjectPage({ params, searchParams }: Props) {
   const { projectId } = await params;
@@ -27,8 +27,8 @@ export default async function ProjectPage({ params, searchParams }: Props) {
   return <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-50"><div className="mx-auto max-w-6xl">
     {query.error ? <p role="alert" className="mb-5 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">Action refusée ou données invalides ({query.error}).</p> : null}
     {query.status === "INVITATION_ACCEPTED" ? <p role="status" className="mb-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">Invitation acceptée.</p> : null}
-    {query.invitation ? <div role="status" className="mb-5 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-sm text-cyan-100"><b>Invitation créée — copiez ce lien maintenant :</b><code className="mt-2 block break-all rounded bg-slate-950 p-2">/invitations/accept?token={query.invitation}</code></div> : null}
-    <header className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5"><Link href="/dashboard" className="text-sm text-cyan-300">← Dashboard</Link><p className="mt-4 text-xs uppercase tracking-[0.22em] text-slate-400">Projet {project.visibility} · {role}</p><h1 className="mt-2 text-3xl font-semibold">{project.name}</h1><p className="mt-2 text-sm text-slate-400">{project.description || "Aucune description."}</p></header>
+    {query.invitation ? <div role="status" className="mb-5 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-sm text-cyan-100"><b>{query.email === "SENT" ? "Invitation envoyée par email." : "Invitation créée, mais email non envoyé : configurez Resend. Copiez ce lien de secours :"}</b><code className="mt-2 block break-all rounded bg-slate-950 p-2">/invitations/accept?token={query.invitation}</code></div> : null}
+    <header className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5"><div className="flex flex-wrap items-center justify-between gap-3"><Link href="/dashboard" className="text-sm text-cyan-300">← Dashboard</Link>{role && role !== "owner" ? <form action={leaveProject}><input type="hidden" name="projectId" value={projectId} /><button className="rounded-xl border border-rose-500/50 px-3 py-2 text-sm text-rose-200">Quitter le projet</button></form> : null}</div><p className="mt-4 text-xs uppercase tracking-[0.22em] text-slate-400">Projet {project.visibility} · {role}</p><h1 className="mt-2 text-3xl font-semibold">{project.name}</h1><p className="mt-2 text-sm text-slate-400">{project.description || "Aucune description."}</p></header>
     <section className="mt-6 grid gap-4 md:grid-cols-3"><Metric label="Membres" value={members?.length ?? 0} /><Metric label="Tâches" value={tasks?.length ?? 0} /><Metric label="Avancement" value={`${progress}%`} /></section>
 
     {canManage ? <section className="mt-8 rounded-3xl border border-slate-800 bg-slate-900 p-5"><h2 className="text-xl font-semibold">Créer une tâche</h2><form action={createTask} className="mt-5 grid gap-4 md:grid-cols-2">

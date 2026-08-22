@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { acceptInvitation } from "@/app/projects/collaboration-actions";
+import { acceptInvitation, declineInvitationByToken } from "@/app/projects/collaboration-actions";
 
 type AcceptInvitationPageProps = { searchParams: Promise<{ token?: string; error?: string }> };
 
@@ -14,10 +14,16 @@ export default async function AcceptInvitationPage({ searchParams }: AcceptInvit
         <p className="mt-3 text-sm text-slate-400">Connectez-vous avec l’adresse invitée, puis acceptez cette invitation à usage unique.</p>
         {error ? <p role="alert" className="mt-5 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">L’invitation est invalide, expirée, déjà utilisée ou ne correspond pas à votre compte.</p> : null}
         {token ? (
-          <form action={acceptInvitation} className="mt-6">
-            <input type="hidden" name="token" value={token} />
-            <button className="w-full rounded-2xl bg-cyan-400 px-4 py-3 font-semibold text-slate-950 hover:bg-cyan-300">Accepter l’invitation</button>
-          </form>
+          <>
+            <form action={acceptInvitation} className="mt-6">
+              <input type="hidden" name="token" value={token} />
+              <button className="w-full rounded-2xl bg-cyan-400 px-4 py-3 font-semibold text-slate-950 hover:bg-cyan-300">Accepter l’invitation</button>
+            </form>
+            <form action={declineInvitationByToken} className="mt-3">
+              <input type="hidden" name="token" value={token} />
+              <button className="w-full rounded-2xl border border-slate-600 px-4 py-3 font-semibold text-slate-200 hover:border-slate-400">Refuser l’invitation</button>
+            </form>
+          </>
         ) : <p className="mt-5 text-sm text-rose-200">Le lien d’invitation est incomplet.</p>}
         <Link href="/login" className="mt-5 inline-block text-sm text-cyan-300">Se connecter</Link>
       </section>

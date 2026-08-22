@@ -27,6 +27,14 @@ export const taskStatusInputSchema = z.object({
   status: taskStatusSchema,
 });
 
+export const invitationDecisionSchema = z.object({ invitationId: z.string().uuid() });
+export const projectMembershipActionSchema = z.object({ projectId: z.string().uuid() });
+export const taskReassignmentSchema = z.object({
+  projectId: z.string().uuid(),
+  taskId: z.string().uuid(),
+  assigneeIds: z.array(z.string().uuid()).max(50),
+});
+
 export function hashInvitationToken(token: string) {
   const bytes = new TextEncoder().encode(token);
   return crypto.subtle.digest("SHA-256", bytes).then((digest) =>

@@ -5,11 +5,16 @@ import { redirect } from "next/navigation";
 
 import {
   hashInvitationToken,
+  invitationDecisionSchema,
   invitationInputSchema,
   invitationTokenSchema,
+  projectMembershipActionSchema,
+  taskReassignmentSchema,
   taskInputSchema,
   taskStatusInputSchema,
 } from "@/lib/collaboration";
+import { getAppUrl } from "@/lib/app-url";
+import { sendInvitationEmail } from "@/lib/invitation-email";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 function value(formData: FormData, name: string) {
@@ -30,17 +35,28 @@ export async function inviteMember(formData: FormData) {
   });
   if (!parsed.success) redirect(`/projects/${value(formData, "projectId")}?error=INVALID_INVITATION`);
 
-  const { supabase, user } = await authenticatedClient();
+  const { supabase } = await authenticatedClient();
   const token = Array.from(crypto.getRandomValues(new Uint8Array(32)), (byte) => byte.toString(16).padStart(2, "0")).join("");
   const tokenHash = await hashInvitationToken(token);
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-  const { error } = await supabase.from("project_invitations").insert({
-    project_id: parsed.data.projectId, email: parsed.data.email, role: parsed.data.role,
-    token_hash: tokenHash, invited_by: user.id, expires_at: expiresAt,
+  const { error } = await supabase.rpc("create_or_refresh_project_invitation", {
+    invitation_project_id: parsed.data.projectId,
+    invitation_email: parsed.data.email,
+    invitation_role: parsed.data.role,
+    invitation_token_hash: tokenHash,
+    invitation_expires_at: expiresAt,
   });
   if (error) redirect(`/projects/${parsed.data.projectId}?error=INVITATION_FAILED`);
+  const { data: project } = await supabase.from("projects").select("name").eq("id", parsed.data.projectId).maybeSingle();
+  const invitationUrl = `${getAppUrl()}/invitations/accept?token=${token}`;
+  const emailResult = await sendInvitationEmail({
+    to: parsed.data.email,
+    projectName: project?.name ?? "TaskFlow",
+    invitationUrl,
+    role: parsed.data.role,
+  });
   revalidatePath(`/projects/${parsed.data.projectId}`);
-  redirect(`/projects/${parsed.data.projectId}?invitation=${token}`);
+  redirect(`/projects/${parsed.data.projectId}?invitation=${token}&email=${emailResult.sent ? "SENT" : "NOT_SENT"}`);
 }
 
 export async function acceptInvitation(formData: FormData) {
@@ -53,6 +69,18 @@ export async function acceptInvitation(formData: FormData) {
   if (error || typeof projectId !== "string") redirect(`/invitations/accept?token=${token}&error=INVITATION_REJECTED`);
   revalidatePath("/dashboard");
   redirect(`/projects/${projectId}?status=INVITATION_ACCEPTED`);
+}
+
+export async function declineInvitationByToken(formData: FormData) {
+  const token = value(formData, "token");
+  const parsed = invitationTokenSchema.safeParse(token);
+  if (!parsed.success) redirect("/invitations/accept?error=INVALID_INVITATION");
+  const { supabase } = await authenticatedClient();
+  const tokenHash = await hashInvitationToken(parsed.data);
+  const { error } = await supabase.rpc("decline_project_invitation_by_token", { invitation_token_hash: tokenHash });
+  if (error) redirect(`/invitations/accept?token=${token}&error=INVITATION_REJECTED`);
+  revalidatePath("/dashboard");
+  redirect("/dashboard?status=INVITATION_DECLINED");
 }
 
 export async function createTask(formData: FormData) {
@@ -89,4 +117,52 @@ export async function updateTaskStatus(formData: FormData) {
   revalidatePath(`/projects/${parsed.data.projectId}`);
   revalidatePath(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}`);
   redirect(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}?status=UPDATED`);
+}
+
+export async function acceptInvitationFromDashboard(formData: FormData) {
+  const parsed = invitationDecisionSchema.safeParse({ invitationId: value(formData, "invitationId") });
+  if (!parsed.success) redirect("/dashboard?error=INVALID_INVITATION");
+  const { supabase } = await authenticatedClient();
+  const { data: projectId, error } = await supabase.rpc("accept_project_invitation_by_id", { invitation_id: parsed.data.invitationId });
+  if (error || typeof projectId !== "string") redirect("/dashboard?error=INVITATION_REJECTED");
+  revalidatePath("/dashboard");
+  redirect(`/projects/${projectId}?status=INVITATION_ACCEPTED`);
+}
+
+export async function declineInvitationFromDashboard(formData: FormData) {
+  const parsed = invitationDecisionSchema.safeParse({ invitationId: value(formData, "invitationId") });
+  if (!parsed.success) redirect("/dashboard?error=INVALID_INVITATION");
+  const { supabase } = await authenticatedClient();
+  const { error } = await supabase.rpc("decline_project_invitation", { invitation_id: parsed.data.invitationId });
+  if (error) redirect("/dashboard?error=INVITATION_REJECTED");
+  revalidatePath("/dashboard");
+  redirect("/dashboard?status=INVITATION_DECLINED");
+}
+
+export async function leaveProject(formData: FormData) {
+  const parsed = projectMembershipActionSchema.safeParse({ projectId: value(formData, "projectId") });
+  if (!parsed.success) redirect("/dashboard?error=INVALID_PROJECT");
+  const { supabase } = await authenticatedClient();
+  const { error } = await supabase.rpc("leave_project", { leave_project_id: parsed.data.projectId });
+  if (error) redirect(`/projects/${parsed.data.projectId}?error=LEAVE_PROJECT_FAILED`);
+  revalidatePath("/dashboard");
+  redirect("/dashboard?status=PROJECT_LEFT");
+}
+
+export async function reassignTask(formData: FormData) {
+  const parsed = taskReassignmentSchema.safeParse({
+    projectId: value(formData, "projectId"),
+    taskId: value(formData, "taskId"),
+    assigneeIds: formData.getAll("assigneeIds").filter((id): id is string => typeof id === "string"),
+  });
+  if (!parsed.success) redirect(`/projects/${value(formData, "projectId")}?error=INVALID_ASSIGNMENT`);
+  const { supabase } = await authenticatedClient();
+  const { error } = await supabase.rpc("set_task_assignees", {
+    reassigned_task_id: parsed.data.taskId,
+    reassigned_user_ids: parsed.data.assigneeIds,
+  });
+  if (error) redirect(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}?error=ASSIGNMENT_FORBIDDEN`);
+  revalidatePath(`/projects/${parsed.data.projectId}`);
+  revalidatePath(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}`);
+  redirect(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}?status=REASSIGNED`);
 }

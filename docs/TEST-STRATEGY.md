@@ -18,7 +18,7 @@ Au 21 août 2026, la baseline automatisée comprend 11 tests unitaires, 18 asser
 
 ## Extension Jalon 3
 
-La baseline de la branche Jalon 3 comprend 14 tests unitaires, 37 assertions RLS et 5 scénarios Playwright. Le scénario multi-utilisateur crée deux comptes confirmés, produit et accepte une invitation, assigne une tâche au membre puis vérifie son changement de statut. Les assertions SQL couvrent aussi l'observateur, le membre non assigné, l'invitation expirée ou réutilisée et l'atomicité des frontières de rôle.
+La baseline de la branche Jalon 3 comprend 14 tests unitaires, 54 assertions RLS et 5 scénarios Playwright. Le scénario multi-utilisateur crée deux comptes confirmés, affiche et accepte une invitation dans le dashboard, assigne une tâche, vérifie son changement de statut, le départ du membre, la libération automatique puis la réassignation. Les assertions SQL couvrent aussi la réinvitation idempotente, le refus, l'observateur, le membre non assigné, l'invitation expirée ou réutilisée et l'atomicité des frontières de rôle.
 
 ## Pyramide de tests
 

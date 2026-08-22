@@ -60,6 +60,8 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 | REQ-020, REQ-021 | tâche persistante et assignations atomiques | `create_project_task`, UI projet et E2E |
 | REQ-022 | changement de statut par membre assigné et journalisation | trigger `tasks_log_activity`, pgTAP et E2E |
 | REQ-024 | avancement calculé depuis les tâches terminées | carte d'avancement projet et assertion SQL |
+| REQ-011, SEC-19 | notification dashboard, email Resend, renouvellement et refus d'invitation | `003_invitation_notifications_and_reassignment.sql`, E2E multi-utilisateur |
+| REQ-013, REQ-021 | départ, libération des assignations et réassignation atomique | triggers de départ, `set_task_assignees`, pgTAP et E2E |
 
 ## Definition of Done
 

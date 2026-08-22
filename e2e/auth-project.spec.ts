@@ -171,8 +171,8 @@ test("owner invites a member who accepts an assigned task and changes its status
   await page.goto("/dashboard");
   await page.getByRole("button", { name: "Déconnexion" }).click();
   await registerAndConfirm(memberEmail, "Member");
-  await page.goto(invitationPath!);
-  await page.getByRole("button", { name: "Accepter l’invitation" }).click();
+  await expect(page.getByRole("heading", { name: "Invitations en attente" })).toBeVisible();
+  await page.getByRole("button", { name: "Accepter", exact: true }).click();
   await expect(page.getByRole("status")).toContainText("Invitation acceptée");
 
   await page.goto("/dashboard");
@@ -200,4 +200,18 @@ test("owner invites a member who accepts an assigned task and changes its status
   await page.getByRole("button", { name: "Mettre à jour" }).click();
   await expect(page.getByRole("status")).toHaveText("Statut mis à jour.");
   await expect(page.getByRole("definition").filter({ hasText: "Terminée" })).toBeVisible();
+  await page.getByRole("link", { name: "← Retour au projet" }).click();
+  await page.getByRole("button", { name: "Quitter le projet" }).click();
+  await expect(page.getByRole("status")).toContainText("assignations ont été libérées");
+
+  await page.getByRole("button", { name: "Déconnexion" }).click();
+  await page.getByLabel("Email").fill(ownerEmail);
+  await page.getByLabel("Mot de passe").fill(password);
+  await page.getByRole("button", { name: "Se connecter" }).click();
+  await page.getByRole("link", { name: projectName }).click();
+  await page.getByRole("link", { name: taskName }).click();
+  await expect(page.getByText("Assignés : Personne")).toBeVisible();
+  await page.getByRole("checkbox", { name: "Owner E2E" }).check();
+  await page.getByRole("button", { name: "Enregistrer les assignations" }).click();
+  await expect(page.getByRole("status")).toHaveText("Assignations mises à jour.");
 });
