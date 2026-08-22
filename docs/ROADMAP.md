@@ -77,9 +77,19 @@ Ajouter commentaires, journal d'activité et premières notifications in-app.
 
 Ajouter les notes de livrables, l'historique et les règles de visibilité avant tout score automatique ou badge.
 
-**Statut : en cours depuis le 22 août 2026.** Le périmètre exclut scores automatiques et badges : seules les évaluations humaines, datées, explicables et autorisées sont livrées.
+**Statut : terminé le 22 août 2026.** Les évaluations humaines, datées et immuables sont limitées aux responsables autorisés et aux membres assignés. Leur historique reste privé pour l'évalué et les responsables ; aucun score automatique, moyenne ou badge n'est produit.
+
+- [x] note humaine de 1 à 5 avec commentaire facultatif et date
+- [x] création réservée au propriétaire et au gestionnaire de projet
+- [x] auto-évaluation et évaluation d'un membre non assigné interdites
+- [x] historique immuable visible uniquement par l'évalué et les responsables
+- [x] notification privée et activité sans copie de la note ni du commentaire
+- [x] 82 assertions RLS et 5 scénarios E2E réussis
+- [x] PR #11 fusionnée, migration staging et Production validées
 
 **Sortie :** une évaluation est traçable, explicable, datée et accessible uniquement aux personnes autorisées.
+
+**Décision de passage :** le critère de sortie est satisfait. Le développement passe au Jalon 6 consacré à la production et à l'observabilité.
 
 ## Jalon 6 : production et observabilité
 
