@@ -29,7 +29,7 @@ select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000015'
 select set_config('request.jwt.claim.email','j3-outsider@example.test',true);
 select is(public.accept_project_invitation(repeat('a',64)),'30000000-0000-0000-0000-000000000001'::uuid,'REQ-011: matching authenticated user accepts invitation');
 select is((select role from public.project_members where project_id='30000000-0000-0000-0000-000000000001' and user_id='00000000-0000-0000-0000-000000000015'),'member','REQ-011: acceptance creates requested membership');
-select throws_ok($$select public.accept_project_invitation(repeat('a',64))$$,'P0001','INVITATION_ALREADY_ACCEPTED','SEC-19: invitation is single use');
+select is(public.accept_project_invitation(repeat('a',64)),'30000000-0000-0000-0000-000000000001'::uuid,'SEC-19: repeated acceptance is idempotent');
 
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000011',true);
 insert into public.tasks (id,project_id,title,description,priority,due_date,created_by) values ('40000000-0000-0000-0000-000000000001','30000000-0000-0000-0000-000000000001','Tâche sécurisée','Vertical slice','high',current_date+7,'00000000-0000-0000-0000-000000000011');

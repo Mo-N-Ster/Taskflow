@@ -22,6 +22,14 @@ function value(formData: FormData, name: string) {
   return typeof entry === "string" ? entry : "";
 }
 
+function invitationErrorCode(message?: string) {
+  if (message?.includes("INVITATION_EMAIL_MISMATCH")) return "INVITATION_EMAIL_MISMATCH";
+  if (message?.includes("INVITATION_ALREADY_ACCEPTED")) return "INVITATION_ALREADY_ACCEPTED";
+  if (message?.includes("INVITATION_INACTIVE") || message?.includes("INVITATION_REVOKED")) return "INVITATION_INACTIVE";
+  if (message?.includes("INVITATION_EXPIRED")) return "INVITATION_EXPIRED";
+  return "INVITATION_REJECTED";
+}
+
 async function authenticatedClient() {
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -66,7 +74,7 @@ export async function acceptInvitation(formData: FormData) {
   const { supabase } = await authenticatedClient();
   const tokenHash = await hashInvitationToken(parsed.data);
   const { data: projectId, error } = await supabase.rpc("accept_project_invitation", { invitation_token_hash: tokenHash });
-  if (error || typeof projectId !== "string") redirect(`/invitations/accept?token=${token}&error=INVITATION_REJECTED`);
+  if (error || typeof projectId !== "string") redirect(`/invitations/accept?token=${token}&error=${invitationErrorCode(error?.message)}`);
   revalidatePath("/dashboard");
   redirect(`/projects/${projectId}?status=INVITATION_ACCEPTED`);
 }
@@ -78,7 +86,7 @@ export async function declineInvitationByToken(formData: FormData) {
   const { supabase } = await authenticatedClient();
   const tokenHash = await hashInvitationToken(parsed.data);
   const { error } = await supabase.rpc("decline_project_invitation_by_token", { invitation_token_hash: tokenHash });
-  if (error) redirect(`/invitations/accept?token=${token}&error=INVITATION_REJECTED`);
+  if (error) redirect(`/invitations/accept?token=${token}&error=${invitationErrorCode(error.message)}`);
   revalidatePath("/dashboard");
   redirect("/dashboard?status=INVITATION_DECLINED");
 }
@@ -124,7 +132,7 @@ export async function acceptInvitationFromDashboard(formData: FormData) {
   if (!parsed.success) redirect("/dashboard?error=INVALID_INVITATION");
   const { supabase } = await authenticatedClient();
   const { data: projectId, error } = await supabase.rpc("accept_project_invitation_by_id", { invitation_id: parsed.data.invitationId });
-  if (error || typeof projectId !== "string") redirect("/dashboard?error=INVITATION_REJECTED");
+  if (error || typeof projectId !== "string") redirect(`/dashboard?error=${invitationErrorCode(error?.message)}`);
   revalidatePath("/dashboard");
   redirect(`/projects/${projectId}?status=INVITATION_ACCEPTED`);
 }
@@ -134,7 +142,7 @@ export async function declineInvitationFromDashboard(formData: FormData) {
   if (!parsed.success) redirect("/dashboard?error=INVALID_INVITATION");
   const { supabase } = await authenticatedClient();
   const { error } = await supabase.rpc("decline_project_invitation", { invitation_id: parsed.data.invitationId });
-  if (error) redirect("/dashboard?error=INVITATION_REJECTED");
+  if (error) redirect(`/dashboard?error=${invitationErrorCode(error.message)}`);
   revalidatePath("/dashboard");
   redirect("/dashboard?status=INVITATION_DECLINED");
 }
