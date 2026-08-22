@@ -93,13 +93,18 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 
 **Décision du 22 août 2026 :** le Jalon 4 satisfait sa sortie et autorise l'ouverture du Jalon 5.
 
-### Preuves en préparation pour le Jalon 5
+### Preuves de clôture du Jalon 5
 
-| Exigence | Implémentation | Preuve attendue |
+| Exigence | Implémentation | Preuve obtenue |
 | --- | --- | --- |
-| REQ-030, SEC-06 | note 1–5 par owner/manager pour un membre assigné | `005_jalon_5_controlled_evaluations.sql` |
-| REQ-031, SEC-04 | historique immuable visible par l'évalué et les responsables | tests RLS multi-rôles et E2E |
-| STPA L6 | aucune moyenne, badge ou automatisation ; audit sans copie du commentaire | revue migration, UI et activité |
+| REQ-030, SEC-06 | note 1–5 par owner/manager pour un membre assigné | migration `20260822210000`, pgTAP et E2E multi-utilisateur |
+| REQ-031, SEC-04 | historique immuable visible par l'évalué et les responsables | tests RLS multi-rôles, notification privée et validation staging |
+| STPA L6 | aucune moyenne, badge ou automatisation ; audit sans copie du commentaire | revue migration, UI, activité et journaux Supabase sans erreur |
+| Pipeline | PR #11, commits correctifs `169032f` et `ab3d038` | Quality, 82 assertions pgTAP, 5 E2E et Preview au vert |
+| Supabase staging | migration `20260822210000` | historique local/distant synchronisé |
+| Production | merge `f20728e` | déploiement Vercel `taskflow-msbtlpzao` en état `Ready` |
+
+**Décision du 22 août 2026 :** le Jalon 5 satisfait sa sortie et autorise l'ouverture du Jalon 6.
 
 ## Definition of Done
 

@@ -48,4 +48,4 @@ pnpm build
 
 ## État actuel
 
-Les Jalons 1 à 4 sont terminés et déployés. Le Jalon 5 est en cours : évaluations humaines contrôlées, historique et visibilité par rôle.
+Les Jalons 1 à 5 sont terminés et déployés. Le Jalon 6 est le prochain objectif : observabilité, alertes, sauvegardes et procédure de rollback.
