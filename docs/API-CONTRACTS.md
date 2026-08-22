@@ -40,6 +40,10 @@ Les messages retournés au navigateur sont génériques. Les logs utilisent `req
 
 `addTaskComment` valide 1 à 5000 caractères puis crée atomiquement le commentaire, l'activité et les notifications des autres membres. `openNotification` ne peut marquer comme lue qu'une notification du compte authentifié.
 
+### Contrats du Jalon 5
+
+`createEvaluation` accepte une tâche, un membre assigné, une note entière de 1 à 5 et un commentaire facultatif de 2000 caractères maximum. La RPC réserve l'action au propriétaire et au chef de projet, interdit l'auto-évaluation et crée atomiquement l'historique, l'audit et la notification de l'évalué.
+
 ## Règles de validation
 
 | Champ | Règle MVP |

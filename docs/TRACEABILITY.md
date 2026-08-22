@@ -93,6 +93,14 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 
 **Décision du 22 août 2026 :** le Jalon 4 satisfait sa sortie et autorise l'ouverture du Jalon 5.
 
+### Preuves en préparation pour le Jalon 5
+
+| Exigence | Implémentation | Preuve attendue |
+| --- | --- | --- |
+| REQ-030, SEC-06 | note 1–5 par owner/manager pour un membre assigné | `005_jalon_5_controlled_evaluations.sql` |
+| REQ-031, SEC-04 | historique immuable visible par l'évalué et les responsables | tests RLS multi-rôles et E2E |
+| STPA L6 | aucune moyenne, badge ou automatisation ; audit sans copie du commentaire | revue migration, UI et activité |
+
 ## Definition of Done
 
 - exigence et critère d'acceptation identifiés ;

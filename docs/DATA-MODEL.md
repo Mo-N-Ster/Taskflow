@@ -46,6 +46,10 @@ La migration `20260822130000_invitation_notifications_and_reassignment.sql` rend
 
 La migration `20260822190000_jalon_4_collaboration_activity.sql` ajoute des commentaires immuables et des notifications in-app privées. Le contenu reste uniquement dans `comments` ; les événements et notifications ne recopient pas le texte. Les membres commentent, les observateurs lisent seulement et chaque notification appartient exclusivement à son destinataire.
 
+## Évaluations du Jalon 5
+
+La migration `20260822210000_jalon_5_controlled_evaluations.sql` ajoute des évaluations humaines immuables liées à une tâche, un responsable et un membre assigné. La note est comprise entre 1 et 5. L'évalué voit son historique ; owner et project manager voient les évaluations du projet ; les autres membres et observateurs n'y accèdent pas. Aucun agrégat, score automatique ou badge n'est calculé.
+
 ## Règles d'intégrité
 
 - Les identifiants sont des UUID et les dates sont stockées en UTC.
