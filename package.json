@@ -14,16 +14,22 @@
     "clean:next": "node -e \"require('node:fs').rmSync('.next',{recursive:true,force:true})\"",
     "test:e2e": "pnpm clean:next && pnpm build && node ./node_modules/@playwright/test/cli.js test",
     "test:db": "pnpm dlx supabase test db",
+    "smoke": "node scripts/smoke.mjs",
     "supabase:start": "pnpm dlx supabase start",
     "supabase:stop": "pnpm dlx supabase stop",
     "supabase:reset": "pnpm dlx supabase db reset"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.1",
+    "@sentry/nextjs": "^10.70.0",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.3",
+    "@vercel/otel": "^2.1.3",
+    "import-in-the-middle": "^3.3.3",
     "next": "15.5.23",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "require-in-the-middle": "^8.0.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {

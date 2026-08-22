@@ -20,6 +20,18 @@ test("visitor can move through the public authentication screens", async ({ page
   await expect(page.getByRole("heading", { name: "Créer un compte" })).toBeVisible();
 });
 
+test("health endpoint reports the application and Supabase Auth ready", async ({ request }) => {
+  const response = await request.get("/api/health");
+  expect(response.status()).toBe(200);
+  expect(response.headers()["cache-control"]).toContain("no-store");
+  expect(response.headers()["x-request-id"]).toBeTruthy();
+  await expect(response.json()).resolves.toMatchObject({
+    status: "ok",
+    service: "taskflow-web",
+    checks: { configuration: true, supabaseAuth: true },
+  });
+});
+
 test("protected routes redirect visitors to login", async ({ page }) => {
   await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/login\?next=%2Fdashboard$/);
