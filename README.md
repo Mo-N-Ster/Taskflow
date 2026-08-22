@@ -48,4 +48,4 @@ pnpm build
 
 ## État actuel
 
-Les Jalons 1 et 2 sont terminés. Le Jalon 3 est implémenté sur sa branche de livraison : invitations sécurisées, tâches persistantes, assignation multiple, changements de statut et journal minimal. Sa clôture formelle dépend encore de la CI, de la migration Supabase staging et de la validation Preview Vercel.
+Les Jalons 1, 2 et 3 sont terminés et déployés. Le Jalon 4 est en cours : commentaires de tâche, activité contextualisée et notifications in-app.

@@ -51,9 +51,9 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 
 **Décision du 21 août 2026 :** les preuves automatisées et manuelles satisfont le critère de sortie du Jalon 2. Les invitations et les données de tâches restent hors périmètre et ouvrent le Jalon 3.
 
-### Preuves en préparation pour le Jalon 3
+### Dossier de clôture du Jalon 3
 
-| Exigence | Implémentation | Preuve locale |
+| Exigence | Implémentation | Preuve validée |
 | --- | --- | --- |
 | REQ-011, SEC-19 | invitations hashées, expirantes, liées à l'email et à usage unique | `002_jalon_3_tasks_and_invitations_rls.sql`, scénario Playwright multi-utilisateur |
 | REQ-012, SEC-06 | observateur en lecture seule et contrôles de rôle côté serveur/RLS | tests négatifs pgTAP |
@@ -62,6 +62,16 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 | REQ-024 | avancement calculé depuis les tâches terminées | carte d'avancement projet et assertion SQL |
 | REQ-011, SEC-19 | notification dashboard, email Resend, renouvellement et refus d'invitation | `003_invitation_notifications_and_reassignment.sql`, E2E multi-utilisateur |
 | REQ-013, REQ-021 | départ, libération des assignations et réassignation atomique | triggers de départ, `set_task_assignees`, pgTAP et E2E |
+
+| Preuve de livraison | Référence | Résultat |
+| --- | --- | --- |
+| Pull request | [PR #9](https://github.com/Mo-N-Ster/Taskflow/pull/9) | fusionnée dans `master` au commit `c1959f9` |
+| CI de clôture | [GitHub Actions `32576654423`](https://github.com/Mo-N-Ster/Taskflow/actions/runs/32576654423) | qualité, migrations, 54 assertions RLS et 5 scénarios E2E réussis |
+| Supabase staging | migrations jusqu'à `20260822170000` | schéma distant synchronisé |
+| Validation manuelle | invitation vers une adresse réelle | email reçu, notification dashboard visible et acceptation réussie |
+| Production | [TaskFlow sur Vercel](https://taskflow-eight-kappa.vercel.app) | déploiement `Ready` du commit de fusion |
+
+**Décision du 22 août 2026 :** le parcours vertical projet/tâche satisfait son critère de sortie. Le Jalon 4 peut commencer sur une branche dédiée.
 
 ## Definition of Done
 

@@ -43,13 +43,25 @@ Ajouter Supabase Auth, les migrations initiales et les politiques RLS.
 
 Livrer le parcours créer un projet, inviter un membre, créer une tâche, l'assigner et modifier son statut.
 
-**Statut : implémenté localement, validation de livraison en cours.** La migration, les politiques RLS, les invitations à usage unique, la création atomique de tâche, l'assignation multiple et le changement de statut sont couverts par tests unitaires, pgTAP et Playwright. La clôture formelle reste conditionnée à la CI, à la migration Supabase staging et à la Preview Vercel.
+**Statut : terminé le 22 août 2026.** Les invitations par dashboard et email, leur acceptation ou refus, les tâches persistantes, l'assignation multiple, le changement de statut, le départ d'un membre et la réassignation sont validés. La CI, les migrations Supabase staging, la Preview, la Production Vercel et le parcours manuel multi-utilisateur ont réussi.
+
+- [x] migrations Jalon 3 versionnées et appliquées sur Supabase staging
+- [x] invitations idempotentes, liées à l'adresse et transmises par Resend
+- [x] notification dashboard, acceptation et refus validés manuellement
+- [x] création, assignation multiple et changement de statut des tâches
+- [x] départ d'un membre, libération et réassignation des tâches
+- [x] 54 assertions RLS, 14 tests unitaires et 5 scénarios E2E réussis
+- [x] PR #9 fusionnée et déploiement Production validé
 
 **Sortie :** parcours testé de bout en bout sur un environnement local puis Preview.
+
+**Décision de passage :** le critère de sortie est satisfait. Le développement fonctionnel passe au Jalon 4.
 
 ## Jalon 4 : collaboration et activité
 
 Ajouter commentaires, journal d'activité et premières notifications in-app.
+
+**Statut : en cours depuis le 22 août 2026.** Le périmètre MVP couvre les commentaires immuables de tâche, l'activité contextualisée et les notifications in-app lues/non lues. Les observateurs restent en lecture seule.
 
 **Sortie :** une modification importante est visible dans son contexte et son historique.
 
