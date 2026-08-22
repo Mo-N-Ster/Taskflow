@@ -218,7 +218,8 @@ test("owner invites a member who accepts an assigned task and changes its status
   await page.getByLabel("Note").selectOption("5");
   await page.getByLabel("Commentaire d’évaluation").fill(evaluationComment);
   await page.getByRole("button", { name: "Enregistrer l’évaluation" }).click();
-  await expect(page.getByText("5 / 5")).toBeVisible();
+  const evaluationEntry = page.getByRole("article").filter({ hasText: evaluationComment });
+  await expect(evaluationEntry.getByText("5 / 5", { exact: true })).toBeVisible();
   await page.goto("/dashboard");
   await page.getByRole("button", { name: "Déconnexion" }).click();
   await page.getByLabel("Email").fill(memberEmail);
