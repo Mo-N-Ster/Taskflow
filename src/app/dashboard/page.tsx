@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { logout } from "@/app/auth/actions";
-import { acceptInvitationFromDashboard, declineInvitationFromDashboard } from "@/app/projects/collaboration-actions";
+import { acceptInvitationFromDashboard, declineInvitationFromDashboard, openNotification } from "@/app/projects/collaboration-actions";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
 
@@ -33,6 +33,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     .neq("status", "done");
   const { data: invitationData } = await supabase.rpc("list_my_pending_invitations");
   const invitations = (invitationData ?? []) as PendingInvitation[];
+  const { data: notifications } = await supabase.from("notifications").select("id,project_id,task_id,event_type,read_at,created_at,projects(name),tasks(title)").order("created_at", { ascending: false }).limit(20);
 
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-50">
@@ -84,6 +85,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             </div></div>
           </article>)}</div>
         </section> : null}
+
+        {notifications?.length ? <section className="mt-8 rounded-3xl border border-violet-500/30 bg-violet-500/10 p-5"><h2 className="text-lg font-semibold text-violet-100">Notifications</h2><div className="mt-4 space-y-3">{notifications.map((notification) => { const project = Array.isArray(notification.projects) ? notification.projects[0] : notification.projects; const task = Array.isArray(notification.tasks) ? notification.tasks[0] : notification.tasks; return <form action={openNotification} key={notification.id} className={`rounded-2xl border p-4 ${notification.read_at ? "border-slate-800 bg-slate-950/50" : "border-violet-400/40 bg-slate-950"}`}><input type="hidden" name="notificationId" value={notification.id} /><input type="hidden" name="projectId" value={notification.project_id} /><input type="hidden" name="taskId" value={notification.task_id ?? ""} /><div className="flex items-center justify-between gap-3"><div><p className="text-sm text-white">Nouveau commentaire sur {task?.title ?? "une tâche"}</p><p className="mt-1 text-xs text-slate-400">{project?.name} · {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(notification.created_at))}</p></div><button className="text-sm text-violet-200">Ouvrir</button></div></form>; })}</div></section> : null}
 
         <section className="mt-8 rounded-3xl border border-slate-800 bg-slate-900 p-5">
           <h2 className="text-lg font-semibold text-white">Mes projets</h2>

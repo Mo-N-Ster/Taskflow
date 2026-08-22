@@ -200,6 +200,10 @@ test("owner invites a member who accepts an assigned task and changes its status
   await page.getByRole("button", { name: "Mettre à jour" }).click();
   await expect(page.getByRole("status")).toHaveText("Statut mis à jour.");
   await expect(page.getByRole("definition").filter({ hasText: "Terminée" })).toBeVisible();
+  const commentBody = `Avancement validé ${uniqueId}`;
+  await page.getByLabel("Nouveau commentaire").fill(commentBody);
+  await page.getByRole("button", { name: "Publier" }).click();
+  await expect(page.getByText(commentBody)).toBeVisible();
   await page.getByRole("link", { name: "← Retour au projet" }).click();
   await page.getByRole("button", { name: "Quitter le projet" }).click();
   await expect(page.getByRole("status")).toContainText("assignations ont été libérées");
@@ -208,10 +212,14 @@ test("owner invites a member who accepts an assigned task and changes its status
   await page.getByLabel("Email").fill(ownerEmail);
   await page.getByLabel("Mot de passe").fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
-  await page.getByRole("link", { name: projectName }).click();
-  await page.getByRole("link", { name: taskName }).click();
+  await expect(page.getByRole("heading", { name: "Notifications" })).toBeVisible();
+  await expect(page.getByText(`Nouveau commentaire sur ${taskName}`)).toBeVisible();
+  await page.getByRole("button", { name: "Ouvrir" }).click();
+  await expect(page.getByText(commentBody)).toBeVisible();
   await expect(page.getByText("Assignés : Personne")).toBeVisible();
   await page.getByRole("checkbox", { name: "Owner E2E" }).check();
   await page.getByRole("button", { name: "Enregistrer les assignations" }).click();
   await expect(page.getByRole("status")).toHaveText("Assignations mises à jour.");
+  await page.getByRole("link", { name: "← Retour au projet" }).click();
+  await expect(page.getByText("a ajouté un commentaire")).toBeVisible();
 });

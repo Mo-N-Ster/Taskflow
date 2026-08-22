@@ -34,6 +34,8 @@ export const taskReassignmentSchema = z.object({
   taskId: z.string().uuid(),
   assigneeIds: z.array(z.string().uuid()).max(50),
 });
+export const commentInputSchema = z.object({ projectId: z.string().uuid(), taskId: z.string().uuid(), body: z.string().trim().min(1).max(5000) });
+export const notificationActionSchema = z.object({ notificationId: z.string().regex(/^\d+$/), projectId: z.string().uuid(), taskId: z.string().uuid() });
 
 export function hashInvitationToken(token: string) {
   const bytes = new TextEncoder().encode(token);
