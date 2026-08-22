@@ -48,4 +48,4 @@ pnpm build
 
 ## État actuel
 
-Les Jalons 1 et 2 sont terminés. Supabase Auth, les profils, les projets, les memberships, la création persistée de projet et l'isolation RLS sont implémentés et validés par la CI, les tests RLS, les tests E2E et une Preview Vercel. Le prochain objectif est le Jalon 3 : invitations, tâches persistantes, assignation et changement de statut.
+Les Jalons 1 et 2 sont terminés. Le Jalon 3 est implémenté sur sa branche de livraison : invitations sécurisées, tâches persistantes, assignation multiple, changements de statut et journal minimal. Sa clôture formelle dépend encore de la CI, de la migration Supabase staging et de la validation Preview Vercel.

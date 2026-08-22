@@ -12,23 +12,24 @@ function value(formData: FormData, name: string) {
 }
 
 export async function login(formData: FormData) {
+  const next = value(formData, "next");
   const parsed = loginInputSchema.safeParse({
     email: value(formData, "email"),
     password: value(formData, "password"),
   });
 
   if (!parsed.success) {
-    redirect("/login?error=INVALID_INPUT");
+    redirect(`/login?error=INVALID_INPUT${next ? `&next=${encodeURIComponent(next)}` : ""}`);
   }
 
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
 
   if (error) {
-    redirect("/login?error=AUTH_INVALID");
+    redirect(`/login?error=AUTH_INVALID${next ? `&next=${encodeURIComponent(next)}` : ""}`);
   }
 
-  redirect("/dashboard");
+  redirect(next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard");
 }
 
 export async function register(formData: FormData) {

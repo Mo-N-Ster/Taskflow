@@ -3,11 +3,11 @@ import Link from "next/link";
 import { login } from "@/app/auth/actions";
 
 type LoginPageProps = {
-  searchParams: Promise<{ error?: string; status?: string }>;
+  searchParams: Promise<{ error?: string; status?: string; next?: string }>;
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { error, status } = await searchParams;
+  const { error, status, next } = await searchParams;
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10 text-slate-50">
@@ -29,6 +29,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         ) : null}
 
         <form action={login} className="mt-6 space-y-4">
+          <input type="hidden" name="next" value={next ?? ""} />
           <label className="block">
             <span className="mb-2 block text-sm text-slate-300">Email</span>
             <input

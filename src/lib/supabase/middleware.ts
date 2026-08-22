@@ -28,12 +28,13 @@ export async function refreshSupabaseSession(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const isProtectedRoute =
     request.nextUrl.pathname === "/dashboard" ||
-    request.nextUrl.pathname.startsWith("/projects/");
+    request.nextUrl.pathname.startsWith("/projects/") ||
+    request.nextUrl.pathname === "/invitations/accept";
 
   if (isProtectedRoute && !user) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/login";
-    loginUrl.searchParams.set("next", request.nextUrl.pathname);
+    loginUrl.searchParams.set("next", `${request.nextUrl.pathname}${request.nextUrl.search}`);
     return NextResponse.redirect(loginUrl);
   }
 

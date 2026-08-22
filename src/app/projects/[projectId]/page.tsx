@@ -1,60 +1,54 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { createTask, inviteMember, leaveProject } from "@/app/projects/collaboration-actions";
+import { taskPriorityLabels, taskStatusLabels } from "@/lib/collaboration";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-type ProjectPageProps = {
-  params: Promise<{ projectId: string }>;
-};
+type Props = { params: Promise<{ projectId: string }>; searchParams: Promise<{ error?: string; status?: string; invitation?: string; email?: string }> };
 
-export default async function ProjectPage({ params }: ProjectPageProps) {
+export default async function ProjectPage({ params, searchParams }: Props) {
   const { projectId } = await params;
+  const query = await searchParams;
   const supabase = await createSupabaseServerClient();
-  const { data: project } = await supabase.from("projects").select("id, name, description, visibility, owner_id").eq("id", projectId).maybeSingle();
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: project } = await supabase.from("projects").select("id,name,description,visibility").eq("id", projectId).maybeSingle();
+  if (!project || !user) notFound();
 
-  if (!project) {
-    notFound();
-  }
+  const [{ data: members }, { data: tasks }] = await Promise.all([
+    supabase.from("project_members").select("user_id,role,profiles(display_name)").eq("project_id", projectId).order("joined_at"),
+    supabase.from("tasks").select("id,title,status,priority,due_date").eq("project_id", projectId).order("created_at", { ascending: false }),
+  ]);
+  const role = members?.find((member) => member.user_id === user.id)?.role;
+  const canManage = role === "owner" || role === "project_manager";
+  const done = tasks?.filter((task) => task.status === "done").length ?? 0;
+  const progress = tasks?.length ? Math.round(done / tasks.length * 100) : 0;
 
-  const { data: members } = await supabase.from("project_members").select("user_id, role, profiles(display_name)").eq("project_id", project.id).order("joined_at");
+  return <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-50"><div className="mx-auto max-w-6xl">
+    {query.error ? <p role="alert" className="mb-5 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">Action refusée ou données invalides ({query.error}).</p> : null}
+    {query.status === "INVITATION_ACCEPTED" ? <p role="status" className="mb-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">Invitation acceptée.</p> : null}
+    {query.invitation ? <div role="status" className="mb-5 rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-4 text-sm text-cyan-100"><b>{query.email === "SENT" ? "Invitation envoyée par email." : "Invitation créée, mais email non envoyé : configurez Resend. Copiez ce lien de secours :"}</b><code className="mt-2 block break-all rounded bg-slate-950 p-2">/invitations/accept?token={query.invitation}</code></div> : null}
+    <header className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5"><div className="flex flex-wrap items-center justify-between gap-3"><Link href="/dashboard" className="text-sm text-cyan-300">← Dashboard</Link>{role && role !== "owner" ? <form action={leaveProject}><input type="hidden" name="projectId" value={projectId} /><button className="rounded-xl border border-rose-500/50 px-3 py-2 text-sm text-rose-200">Quitter le projet</button></form> : null}</div><p className="mt-4 text-xs uppercase tracking-[0.22em] text-slate-400">Projet {project.visibility} · {role}</p><h1 className="mt-2 text-3xl font-semibold">{project.name}</h1><p className="mt-2 text-sm text-slate-400">{project.description || "Aucune description."}</p></header>
+    <section className="mt-6 grid gap-4 md:grid-cols-3"><Metric label="Membres" value={members?.length ?? 0} /><Metric label="Tâches" value={tasks?.length ?? 0} /><Metric label="Avancement" value={`${progress}%`} /></section>
 
-  return (
-    <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-50">
-      <div className="mx-auto max-w-6xl">
-        <header className="mb-6 rounded-3xl border border-slate-800 bg-slate-900/80 p-5">
-          <Link href="/dashboard" className="text-sm text-cyan-300 hover:text-cyan-200">← Dashboard</Link>
-          <p className="mt-4 text-xs uppercase tracking-[0.22em] text-slate-400">Projet {project.visibility === "private" ? "privé" : "public"}</p>
-          <h1 className="mt-2 text-3xl font-semibold text-white">{project.name}</h1>
-          <p className="mt-2 text-sm text-slate-400">{project.description || "Aucune description."}</p>
-        </header>
+    {canManage ? <section className="mt-8 rounded-3xl border border-slate-800 bg-slate-900 p-5"><h2 className="text-xl font-semibold">Créer une tâche</h2><form action={createTask} className="mt-5 grid gap-4 md:grid-cols-2">
+      <input type="hidden" name="projectId" value={projectId} /><Field label="Titre"><input aria-label="Titre" required maxLength={160} name="title" className="control" /></Field>
+      <Field label="Priorité"><select aria-label="Priorité" name="priority" className="control"><option value="low">Basse</option><option value="medium">Moyenne</option><option value="high">Haute</option></select></Field>
+      <label className="md:col-span-2"><span className="mb-2 block text-sm text-slate-300">Description de la tâche</span><textarea name="description" maxLength={5000} rows={3} className="control" /></label>
+      <Field label="Échéance"><input aria-label="Échéance" type="date" name="dueDate" className="control" /></Field>
+      <fieldset><legend className="mb-2 text-sm text-slate-300">Assignation</legend><div className="max-h-32 space-y-2 overflow-auto rounded-xl border border-slate-700 bg-slate-950 p-3">{(members ?? []).filter((m) => m.role !== "observer").map((m) => <label key={m.user_id} className="flex gap-2 text-sm"><input type="checkbox" name="assigneeIds" value={m.user_id} />{profileName(m.profiles)}</label>)}</div></fieldset>
+      <button className="rounded-xl bg-cyan-400 px-4 py-3 font-semibold text-slate-950 md:col-span-2">Créer la tâche</button>
+    </form></section> : null}
 
-        <section className="grid gap-4 md:grid-cols-2">
-          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-            <p className="text-sm text-slate-400">Membres</p>
-            <p className="mt-3 text-3xl font-semibold text-cyan-300">{members?.length ?? 0}</p>
-          </article>
-          <article className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-            <p className="text-sm text-slate-400">Tâches</p>
-            <p className="mt-3 text-3xl font-semibold text-slate-500">—</p>
-            <p className="mt-2 text-xs text-slate-500">Disponible au Jalon 3</p>
-          </article>
-        </section>
+    <section className="mt-8 rounded-3xl border border-slate-800 bg-slate-900 p-5"><h2 className="text-xl font-semibold">Tâches</h2>{!tasks?.length ? <p className="mt-4 text-sm text-slate-400">Aucune tâche pour le moment.</p> : <div className="mt-5 space-y-3">{tasks.map((task) => <Link key={task.id} href={`/projects/${projectId}/tasks/${task.id}`} className="block rounded-2xl border border-slate-800 bg-slate-950 p-4 hover:border-cyan-500/40"><div className="flex flex-wrap justify-between gap-3"><p className="font-medium">{task.title}</p><div className="flex gap-2"><Badge>{taskPriorityLabels[task.priority as keyof typeof taskPriorityLabels]}</Badge><Badge>{taskStatusLabels[task.status as keyof typeof taskStatusLabels]}</Badge></div></div></Link>)}</div>}</section>
 
-        <section className="mt-8 rounded-3xl border border-slate-800 bg-slate-900 p-5">
-          <h2 className="text-xl font-semibold text-white">Équipe</h2>
-          <div className="mt-5 divide-y divide-slate-800">
-            {(members ?? []).map((member) => {
-              const profile = Array.isArray(member.profiles) ? member.profiles[0] : member.profiles;
-              return (
-                <div key={member.user_id} className="flex items-center justify-between gap-4 py-4">
-                  <p className="text-slate-200">{profile?.display_name ?? "Utilisateur"}</p>
-                  <span className="rounded-full bg-cyan-500/10 px-2 py-1 text-xs text-cyan-200">{member.role}</span>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      </div>
-    </main>
-  );
+    <section className="mt-8 grid gap-6 lg:grid-cols-2"><article className="rounded-3xl border border-slate-800 bg-slate-900 p-5"><h2 className="text-xl font-semibold">Équipe</h2><div className="mt-4 divide-y divide-slate-800">{members?.map((m) => <div key={m.user_id} className="flex justify-between py-3"><p>{profileName(m.profiles)}</p><span className="text-xs text-cyan-200">{m.role}</span></div>)}</div></article>
+      {role === "owner" ? <article className="rounded-3xl border border-slate-800 bg-slate-900 p-5"><h2 className="text-xl font-semibold">Inviter un membre</h2><form action={inviteMember} className="mt-4 space-y-4"><input type="hidden" name="projectId" value={projectId} /><Field label="Email"><input aria-label="Email du membre" type="email" name="email" required className="control" /></Field><Field label="Rôle"><select aria-label="Rôle" name="role" className="control"><option value="member">Membre</option><option value="project_manager">Chef de projet</option><option value="observer">Observateur</option></select></Field><button className="w-full rounded-xl border border-cyan-400 px-4 py-2 text-cyan-200">Créer le lien d’invitation</button></form></article> : null}
+    </section>
+  </div></main>;
 }
+
+function profileName(profiles: { display_name: string } | { display_name: string }[] | null) { return (Array.isArray(profiles) ? profiles[0] : profiles)?.display_name ?? "Utilisateur"; }
+function Metric({ label, value }: { label: string; value: string | number }) { return <article className="rounded-2xl border border-slate-800 bg-slate-900 p-5"><p className="text-sm text-slate-400">{label}</p><p className="mt-3 text-3xl font-semibold text-cyan-300">{value}</p></article>; }
+function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="block"><span className="mb-2 block text-sm text-slate-300">{label}</span>{children}</label>; }
+function Badge({ children }: { children: React.ReactNode }) { return <span className="rounded-full bg-cyan-500/10 px-2 py-1 text-xs text-cyan-200">{children}</span>; }

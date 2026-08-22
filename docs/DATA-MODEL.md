@@ -34,6 +34,14 @@ La valeur `visibility = public` est persistée, mais elle n'accorde pas encore d
 
 Les tables de session, invitation et reset sont gérées par le fournisseur d'identité lorsque c'est possible. Elles doivent néanmoins respecter des dates d'expiration, une révocation et une consommation unique.
 
+## Tranche verticale du Jalon 3
+
+La migration `20260821090000_jalon_3_vertical_slice.sql` ajoute `project_invitations`, `tasks`, `task_assignees` et `activity_events`. Les invitations conservent uniquement un hash SHA-256 du jeton, expirent après sept jours dans l'application et ne peuvent être acceptées qu'une fois par un compte dont l'email authentifié correspond.
+
+La fonction `create_project_task` crée atomiquement la tâche et ses assignations. Les triggers contrôlent que chaque personne assignée est membre actif non observateur et journalisent la création ainsi que les changements de statut. Un membre assigné peut uniquement changer le statut ; les champs de pilotage restent réservés au propriétaire et au chef de projet.
+
+La migration `20260822130000_invitation_notifications_and_reassignment.sql` rend la réinvitation idempotente, expose les invitations en attente uniquement au compte correspondant et ajoute acceptation/refus depuis le dashboard. Le départ d'un membre supprime automatiquement ses assignations sans supprimer les tâches ; owner et chef de projet peuvent ensuite les réassigner atomiquement.
+
 ## Règles d'intégrité
 
 - Les identifiants sont des UUID et les dates sont stockées en UTC.
@@ -54,7 +62,7 @@ Chaque table métier doit avoir RLS activé. La politique minimale est : un util
 | Modifier une tâche assignée | Oui | Oui | Oui | Non |
 | Noter un livrable | Oui | Oui | Non | Non |
 
-La matrice du socle projets/memberships est traduite en politiques SQL. Les règles liées aux tâches seront ajoutées avec leur schéma au Jalon 3.
+La matrice projets, memberships, invitations, tâches, assignations et événements est traduite en politiques SQL. Les commentaires seront ajoutés au Jalon 4 avec leur politique de rétention.
 
 Les tests RLS doivent couvrir les lectures, insertions, mises à jour et suppressions pour chaque rôle, ainsi que les cas de projet supprimé, membre révoqué et session expirée. Une policy permissive par défaut est interdite.
 

@@ -1,7 +1,9 @@
 import Link from "next/link";
 
 import { logout } from "@/app/auth/actions";
+import { acceptInvitationFromDashboard, declineInvitationFromDashboard } from "@/app/projects/collaboration-actions";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { PendingSubmitButton } from "@/components/pending-submit-button";
 
 type ProjectSummary = {
   id: string;
@@ -11,11 +13,13 @@ type ProjectSummary = {
 };
 
 type DashboardPageProps = {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; status?: string }>;
 };
 
+type PendingInvitation = { id: string; project_id: string; project_name: string; role: string; expires_at: string };
+
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
-  const { error } = await searchParams;
+  const { error, status } = await searchParams;
   const supabase = await createSupabaseServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data } = await supabase
@@ -23,6 +27,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     .select("id, name, visibility, owner_id")
     .order("created_at", { ascending: false });
   const projects = (data ?? []) as ProjectSummary[];
+  const { count: activeTaskCount } = await supabase
+    .from("tasks")
+    .select("id", { count: "exact", head: true })
+    .neq("status", "done");
+  const { data: invitationData } = await supabase.rpc("list_my_pending_invitations");
+  const invitations = (invitationData ?? []) as PendingInvitation[];
 
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-50">
@@ -32,6 +42,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
             La déconnexion a échoué. Veuillez réessayer.
           </p>
         ) : null}
+        {error === "INVITATION_EMAIL_MISMATCH" ? <p role="alert" className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">Cette invitation appartient à une autre adresse. Vous êtes actuellement connecté avec {user?.email}. Déconnectez-vous, puis utilisez exactement l’adresse destinataire de l’invitation.</p> : null}
+        {error && !["LOGOUT_FAILED", "INVITATION_EMAIL_MISMATCH"].includes(error) ? <p role="alert" className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">Cette invitation est expirée, refusée ou n’est plus active.</p> : null}
+        {status === "INVITATION_DECLINED" ? <p role="status" className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">Invitation refusée.</p> : null}
+        {status === "PROJECT_LEFT" ? <p role="status" className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">Vous avez quitté le projet. Vos anciennes assignations ont été libérées.</p> : null}
         <header className="mb-6 flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/80 p-5 backdrop-blur-sm md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">TaskFlow</p>
@@ -57,10 +71,19 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           </article>
           <article className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
             <p className="text-sm text-slate-400">Tâches actives</p>
-            <p className="mt-3 text-3xl font-semibold text-slate-500">—</p>
-            <p className="mt-2 text-xs text-slate-500">Disponible au Jalon 3</p>
+            <p className="mt-3 text-3xl font-semibold text-emerald-300">{activeTaskCount ?? 0}</p>
           </article>
         </section>
+
+        {invitations.length > 0 ? <section className="mt-8 rounded-3xl border border-cyan-500/30 bg-cyan-500/10 p-5">
+          <h2 className="text-lg font-semibold text-cyan-100">Invitations en attente</h2>
+          <div className="mt-4 space-y-3">{invitations.map((invitation) => <article key={invitation.id} className="rounded-2xl border border-cyan-500/20 bg-slate-950/70 p-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="font-medium text-white">{invitation.project_name}</p><p className="mt-1 text-xs text-slate-400">Rôle : {invitation.role} · expire le {new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(invitation.expires_at))}</p></div><div className="flex gap-2">
+              <form action={acceptInvitationFromDashboard}><input type="hidden" name="invitationId" value={invitation.id} /><PendingSubmitButton pendingLabel="Acceptation…" className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 disabled:cursor-wait disabled:opacity-60">Accepter</PendingSubmitButton></form>
+              <form action={declineInvitationFromDashboard}><input type="hidden" name="invitationId" value={invitation.id} /><PendingSubmitButton pendingLabel="Refus…" className="rounded-xl border border-slate-600 px-4 py-2 text-sm text-slate-200 disabled:cursor-wait disabled:opacity-60">Refuser</PendingSubmitButton></form>
+            </div></div>
+          </article>)}</div>
+        </section> : null}
 
         <section className="mt-8 rounded-3xl border border-slate-800 bg-slate-900 p-5">
           <h2 className="text-lg font-semibold text-white">Mes projets</h2>

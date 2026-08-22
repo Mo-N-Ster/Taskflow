@@ -43,6 +43,8 @@ Ajouter Supabase Auth, les migrations initiales et les politiques RLS.
 
 Livrer le parcours créer un projet, inviter un membre, créer une tâche, l'assigner et modifier son statut.
 
+**Statut : implémenté localement, validation de livraison en cours.** La migration, les politiques RLS, les invitations à usage unique, la création atomique de tâche, l'assignation multiple et le changement de statut sont couverts par tests unitaires, pgTAP et Playwright. La clôture formelle reste conditionnée à la CI, à la migration Supabase staging et à la Preview Vercel.
+
 **Sortie :** parcours testé de bout en bout sur un environnement local puis Preview.
 
 ## Jalon 4 : collaboration et activité

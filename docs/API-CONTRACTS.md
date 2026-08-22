@@ -25,10 +25,16 @@ Les messages retournés au navigateur sont génériques. Les logs utilisent `req
 | `inviteMember` | projectId, email, role | Owner uniquement | `member.invited` |
 | `acceptInvitation` | invitationToken | Token valide et non expiré | `member.joined` |
 | `leaveProject` | projectId | Membre, sauf owner | `member.left` |
+| `declineInvitation` | invitationId ou token | Adresse authentifiée invitée | `member.invitation_declined` |
 | `createTask` | projectId, title, description, priority, dueDate | Owner ou project manager | `task.created` |
 | `updateTask` | taskId, champs modifiables | Owner/manager ou membre assigné | `task.updated` |
 | `updateTaskStatus` | taskId, status | Owner/manager ou membre assigné | `task.status_changed` |
 | `addComment` | taskId, body | Membre du projet non observateur | `comment.created` |
+| `reassignTask` | taskId, assigneeIds | Owner ou project manager | `task.assignees_changed` |
+
+### Contrats livrés au Jalon 3
+
+`inviteMember`, `acceptInvitation`, `declineInvitation`, `leaveProject`, `createTask`, `reassignTask` et `updateTaskStatus` sont implémentés par Server Actions. Les invitations répétées renouvellent atomiquement la ligne active et invalident l'ancien lien. Le destinataire peut accepter ou refuser depuis son dashboard ou le lien email. Les jetons bruts ne sont jamais persistés et les refus d'autorisation sont ramenés à des codes génériques dans l'interface.
 
 ## Règles de validation
 

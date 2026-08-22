@@ -16,6 +16,10 @@ Le projet Vercel `taskflow` est connecté à GitHub et déploie les pull request
 
 Avant l'ouverture à des utilisateurs réels, un projet Supabase production distinct doit être créé, migré, sauvegardé et configuré uniquement dans l'environnement Vercel Production. Les variables Preview doivent rester liées au staging.
 
+### Email d'invitation
+
+L'envoi métier utilise Resend exclusivement côté serveur. Configurer `RESEND_API_KEY` et `RESEND_FROM_EMAIL` dans Vercel Preview/Production et dans `.env.local` pour un test local réel. `RESEND_FROM_EMAIL` doit utiliser un expéditeur ou domaine vérifié. Si le fournisseur est absent ou indisponible, l'invitation reste visible dans le dashboard et l'owner reçoit un lien de secours ; aucune clé ni erreur fournisseur n'est exposée au navigateur.
+
 ## Prérequis
 
 - Node.js LTS et Corepack ;
