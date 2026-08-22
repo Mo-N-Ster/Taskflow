@@ -73,6 +73,14 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 
 **Décision du 22 août 2026 :** le parcours vertical projet/tâche satisfait son critère de sortie. Le Jalon 4 peut commencer sur une branche dédiée.
 
+### Preuves en préparation pour le Jalon 4
+
+| Exigence | Implémentation | Preuve attendue |
+| --- | --- | --- |
+| REQ-023, SEC-04, SEC-06 | commentaires immuables, RPC atomique et RLS par rôle | `004_jalon_4_collaboration_activity.sql` |
+| REQ-002, REQ-023 | activité contextualisée sans copie du contenu | pgTAP et Playwright |
+| Notifications Jalon 4 | notifications privées lues/non lues | pgTAP multi-utilisateur et E2E dashboard |
+
 ## Definition of Done
 
 - exigence et critère d'acceptation identifiés ;

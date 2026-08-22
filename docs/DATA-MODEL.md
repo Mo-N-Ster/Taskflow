@@ -42,6 +42,10 @@ La fonction `create_project_task` crée atomiquement la tâche et ses assignatio
 
 La migration `20260822130000_invitation_notifications_and_reassignment.sql` rend la réinvitation idempotente, expose les invitations en attente uniquement au compte correspondant et ajoute acceptation/refus depuis le dashboard. Le départ d'un membre supprime automatiquement ses assignations sans supprimer les tâches ; owner et chef de projet peuvent ensuite les réassigner atomiquement.
 
+## Collaboration du Jalon 4
+
+La migration `20260822190000_jalon_4_collaboration_activity.sql` ajoute des commentaires immuables et des notifications in-app privées. Le contenu reste uniquement dans `comments` ; les événements et notifications ne recopient pas le texte. Les membres commentent, les observateurs lisent seulement et chaque notification appartient exclusivement à son destinataire.
+
 ## Règles d'intégrité
 
 - Les identifiants sont des UUID et les dates sont stockées en UTC.
@@ -62,7 +66,7 @@ Chaque table métier doit avoir RLS activé. La politique minimale est : un util
 | Modifier une tâche assignée | Oui | Oui | Oui | Non |
 | Noter un livrable | Oui | Oui | Non | Non |
 
-La matrice projets, memberships, invitations, tâches, assignations et événements est traduite en politiques SQL. Les commentaires seront ajoutés au Jalon 4 avec leur politique de rétention.
+La matrice projets, memberships, invitations, tâches, assignations, commentaires, notifications et événements est traduite en politiques SQL. Les commentaires suivent le cycle de vie de leur tâche.
 
 Les tests RLS doivent couvrir les lectures, insertions, mises à jour et suppressions pour chaque rôle, ainsi que les cas de projet supprimé, membre révoqué et session expirée. Une policy permissive par défaut est interdite.
 

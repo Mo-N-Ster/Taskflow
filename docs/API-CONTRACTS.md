@@ -36,6 +36,10 @@ Les messages retournés au navigateur sont génériques. Les logs utilisent `req
 
 `inviteMember`, `acceptInvitation`, `declineInvitation`, `leaveProject`, `createTask`, `reassignTask` et `updateTaskStatus` sont implémentés par Server Actions. Les invitations répétées renouvellent atomiquement la ligne active et invalident l'ancien lien. Le destinataire peut accepter ou refuser depuis son dashboard ou le lien email. Les jetons bruts ne sont jamais persistés et les refus d'autorisation sont ramenés à des codes génériques dans l'interface.
 
+### Contrats du Jalon 4
+
+`addTaskComment` valide 1 à 5000 caractères puis crée atomiquement le commentaire, l'activité et les notifications des autres membres. `openNotification` ne peut marquer comme lue qu'une notification du compte authentifié.
+
 ## Règles de validation
 
 | Champ | Règle MVP |
