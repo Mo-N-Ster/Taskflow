@@ -10,11 +10,9 @@
 
 La base de production n'est jamais utilisée pour développer ou tester manuellement.
 
-### État déployé au 21 août 2026
+### État déployé au 22 août 2026
 
-Le projet Vercel `taskflow` est connecté à GitHub et déploie les pull requests en Preview ainsi que `master` sur la cible Vercel Production. Les deux cibles utilisent temporairement le projet Supabase `taskflow-staging` (`ylaobnddeyhxnvfzkpsi`). Le déploiement de `master` constitue donc une release d'évaluation publique, pas encore une production avec données utilisateur réelles.
-
-Avant l'ouverture à des utilisateurs réels, un projet Supabase production distinct doit être créé, migré, sauvegardé et configuré uniquement dans l'environnement Vercel Production. Les variables Preview doivent rester liées au staging.
+Le projet Vercel `taskflow` est connecté à GitHub et déploie les pull requests en Preview ainsi que `master` sur la cible Vercel Production. Preview et Development utilisent `taskflow-staging` (`ylaobnddeyhxnvfzkpsi`) ; Production utilise exclusivement le projet séparé `taskflow-production` (`sqbdebiazjthryyrorwu`). Les six migrations applicatives sont synchronisées sur Production. L'ouverture à des utilisateurs réels reste conditionnée par la sauvegarde/restauration testée et la clôture formelle du Jalon 6.
 
 ### Email d'invitation
 
@@ -44,6 +42,7 @@ SENTRY_ORG=
 SENTRY_PROJECT=
 OTEL_EXPORTER_OTLP_ENDPOINT=
 OTEL_EXPORTER_OTLP_HEADERS=
+OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` est serveur uniquement. Les valeurs `NEXT_PUBLIC_*` sont publiques par conception et ne doivent jamais être utilisées pour autoriser une action.

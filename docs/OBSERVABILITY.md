@@ -27,7 +27,11 @@ Les fonctions serverless ne sont pas des agents Prometheus persistants. La colle
 - le middleware propage un `x-request-id` validé ; les logs JSON contiennent seulement des champs autorisés et le SHA Vercel.
 - `.github/workflows/production-smoke.yml` vérifie deux fois par heure l'accueil et les dépendances. La variable GitHub `TASKFLOW_PRODUCTION_URL` est obligatoire.
 
-L'export OTLP utilise `OTEL_EXPORTER_OTLP_ENDPOINT` et `OTEL_EXPORTER_OTLP_HEADERS`, configurés comme secrets Vercel serveur. Les identifiants Sentry sont décrits dans `.env.example`.
+L'export OTLP utilise `OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_EXPORTER_OTLP_HEADERS` et le protocole `http/protobuf`, configurés côté serveur dans Vercel. Seuls les en-têtes d'autorisation sont marqués Sensitive. Les identifiants Sentry sont décrits dans `.env.example`.
+
+### Validation Grafana du 22 août 2026
+
+La Preview `1e07222d751bbc52d8c90d07d52746622ef11db8` a exporté avec succès des traces Tempo sous le service `taskflow-web`. La requête TraceQL `{ resource.service.name = "taskflow-web" }` a retrouvé les parcours connexion, dashboard, projets et l'appel contrôlé à `/api/health`. Les traces santé `d898d792753986f4b7c1c0344b564713` (route, 695 ms) et `8371512f66724cf1a2c72034a4337b58` (middleware, 7 ms) constituent la preuve de bout en bout Vercel → OTLP → Grafana. Deux traces partielles sans span racine ont aussi été observées et restent à surveiller lors du calibrage du dashboard.
 
 ## Signaux obligatoires
 

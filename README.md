@@ -51,4 +51,4 @@ pnpm build
 
 ## État actuel
 
-Les Jalons 1 à 5 sont terminés et déployés. Le Jalon 6 est le prochain objectif : observabilité, alertes, sauvegardes et procédure de rollback.
+Les Jalons 1 à 5 sont terminés et déployés. Le Jalon 6 est en cours : la séparation Production, l'observabilité et les procédures d'exploitation sont implémentées ; les exercices d'alerte, sauvegarde/restauration et la protection de `master` restent à valider.
