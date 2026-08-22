@@ -48,4 +48,4 @@ pnpm build
 
 ## État actuel
 
-Les Jalons 1, 2 et 3 sont terminés et déployés. Le Jalon 4 est en cours : commentaires de tâche, activité contextualisée et notifications in-app.
+Les Jalons 1 à 4 sont terminés et déployés. Le Jalon 5 est en cours : évaluations humaines contrôlées, historique et visibilité par rôle.

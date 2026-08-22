@@ -81,6 +81,26 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 | REQ-002, REQ-023 | activité contextualisée sans copie du contenu | pgTAP et Playwright |
 | Notifications Jalon 4 | notifications privées lues/non lues | pgTAP multi-utilisateur et E2E dashboard |
 
+### Dossier de clôture du Jalon 4
+
+| Preuve | Référence | Résultat |
+| --- | --- | --- |
+| Pull request | [PR #10](https://github.com/Mo-N-Ster/Taskflow/pull/10) | fusionnée au commit `dbdd969` |
+| CI | [GitHub Actions `32580983828`](https://github.com/Mo-N-Ster/Taskflow/actions/runs/32580983828) | qualité, 16 tests unitaires, 66 assertions RLS et E2E réussis |
+| Supabase staging | migration `20260822190000` | schéma local/distant synchronisé |
+| Validation manuelle | commentaire, notification, ouverture, activité | parcours complet en `200`, logout en `204`, aucune erreur inattendue |
+| Production | [TaskFlow](https://taskflow-eight-kappa.vercel.app) | déploiement `Ready` |
+
+**Décision du 22 août 2026 :** le Jalon 4 satisfait sa sortie et autorise l'ouverture du Jalon 5.
+
+### Preuves en préparation pour le Jalon 5
+
+| Exigence | Implémentation | Preuve attendue |
+| --- | --- | --- |
+| REQ-030, SEC-06 | note 1–5 par owner/manager pour un membre assigné | `005_jalon_5_controlled_evaluations.sql` |
+| REQ-031, SEC-04 | historique immuable visible par l'évalué et les responsables | tests RLS multi-rôles et E2E |
+| STPA L6 | aucune moyenne, badge ou automatisation ; audit sans copie du commentaire | revue migration, UI et activité |
+
 ## Definition of Done
 
 - exigence et critère d'acceptation identifiés ;

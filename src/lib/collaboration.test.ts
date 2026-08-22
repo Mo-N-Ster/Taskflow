@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { commentInputSchema, hashInvitationToken, invitationInputSchema, notificationActionSchema, taskInputSchema, taskStatusInputSchema } from "./collaboration";
+import { commentInputSchema, evaluationInputSchema, hashInvitationToken, invitationInputSchema, notificationActionSchema, taskInputSchema, taskStatusInputSchema } from "./collaboration";
 
 describe("Jalon 3 validation", () => {
   it("normalizes an invitation email and rejects the owner role", () => {
@@ -35,5 +35,15 @@ describe("Jalon 4 validation", () => {
     const input = { notificationId: "42", projectId: crypto.randomUUID(), taskId: crypto.randomUUID() };
     expect(notificationActionSchema.safeParse(input).success).toBe(true);
     expect(notificationActionSchema.safeParse({ ...input, notificationId: "42x" }).success).toBe(false);
+  });
+});
+
+describe("Jalon 5 validation", () => {
+  it("accepts an explicit score and rejects invalid evaluation data", () => {
+    const input = { projectId: crypto.randomUUID(), taskId: crypto.randomUUID(), memberId: crypto.randomUUID(), comment: "Travail traçable" };
+    expect(evaluationInputSchema.parse({ ...input, score: "5" }).score).toBe(5);
+    expect(evaluationInputSchema.safeParse({ ...input, score: "0" }).success).toBe(false);
+    expect(evaluationInputSchema.safeParse({ ...input, score: "6" }).success).toBe(false);
+    expect(evaluationInputSchema.safeParse({ ...input, score: "4", comment: "x".repeat(2001) }).success).toBe(false);
   });
 });

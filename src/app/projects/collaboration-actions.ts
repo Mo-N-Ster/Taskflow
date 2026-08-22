@@ -14,6 +14,7 @@ import {
   taskStatusInputSchema,
   commentInputSchema,
   notificationActionSchema,
+  evaluationInputSchema,
 } from "@/lib/collaboration";
 import { getAppUrl } from "@/lib/app-url";
 import { sendInvitationEmail } from "@/lib/invitation-email";
@@ -194,4 +195,14 @@ export async function openNotification(formData: FormData) {
   const { error } = await supabase.rpc("mark_notification_read", { notification_id: Number(parsed.data.notificationId) });
   if (error) redirect("/dashboard?error=NOTIFICATION_FORBIDDEN");
   revalidatePath("/dashboard"); redirect(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}`);
+}
+
+export async function createEvaluation(formData: FormData) {
+  const parsed = evaluationInputSchema.safeParse({ projectId: value(formData,"projectId"), taskId: value(formData,"taskId"), memberId: value(formData,"memberId"), score: value(formData,"score"), comment: value(formData,"comment") });
+  if (!parsed.success) redirect(`/projects/${value(formData,"projectId")}/tasks/${value(formData,"taskId")}?error=INVALID_EVALUATION`);
+  const { supabase } = await authenticatedClient();
+  const { error } = await supabase.rpc("create_task_evaluation", { evaluation_task_id: parsed.data.taskId, evaluation_member_id: parsed.data.memberId, evaluation_score: parsed.data.score, evaluation_comment: parsed.data.comment });
+  if (error) redirect(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}?error=EVALUATION_FORBIDDEN`);
+  revalidatePath(`/projects/${parsed.data.projectId}`); revalidatePath(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}`); revalidatePath("/dashboard");
+  redirect(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}?status=EVALUATED`);
 }

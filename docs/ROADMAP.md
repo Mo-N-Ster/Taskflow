@@ -61,13 +61,23 @@ Livrer le parcours créer un projet, inviter un membre, créer une tâche, l'ass
 
 Ajouter commentaires, journal d'activité et premières notifications in-app.
 
-**Statut : en cours depuis le 22 août 2026.** Le périmètre MVP couvre les commentaires immuables de tâche, l'activité contextualisée et les notifications in-app lues/non lues. Les observateurs restent en lecture seule.
+**Statut : terminé le 22 août 2026.** Les commentaires immuables, l'activité contextualisée et les notifications in-app lues/non lues sont validés par CI, RLS, E2E, staging et test manuel. Les observateurs restent en lecture seule.
+
+- [x] commentaire contextualisé avec auteur et date
+- [x] activité sans duplication du contenu privé
+- [x] notifications personnelles lues/non lues
+- [x] 66 assertions RLS et parcours E2E multi-utilisateur réussis
+- [x] PR #10 fusionnée, migration staging et Production validées
 
 **Sortie :** une modification importante est visible dans son contexte et son historique.
+
+**Décision de passage :** le critère de sortie est satisfait. Le développement passe au Jalon 5.
 
 ## Jalon 5 : évaluation contrôlée
 
 Ajouter les notes de livrables, l'historique et les règles de visibilité avant tout score automatique ou badge.
+
+**Statut : en cours depuis le 22 août 2026.** Le périmètre exclut scores automatiques et badges : seules les évaluations humaines, datées, explicables et autorisées sont livrées.
 
 **Sortie :** une évaluation est traçable, explicable, datée et accessible uniquement aux personnes autorisées.
 
