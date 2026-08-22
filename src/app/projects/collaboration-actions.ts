@@ -12,6 +12,8 @@ import {
   taskReassignmentSchema,
   taskInputSchema,
   taskStatusInputSchema,
+  commentInputSchema,
+  notificationActionSchema,
 } from "@/lib/collaboration";
 import { getAppUrl } from "@/lib/app-url";
 import { sendInvitationEmail } from "@/lib/invitation-email";
@@ -173,4 +175,23 @@ export async function reassignTask(formData: FormData) {
   revalidatePath(`/projects/${parsed.data.projectId}`);
   revalidatePath(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}`);
   redirect(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}?status=REASSIGNED`);
+}
+
+export async function addTaskComment(formData: FormData) {
+  const parsed = commentInputSchema.safeParse({ projectId: value(formData, "projectId"), taskId: value(formData, "taskId"), body: value(formData, "body") });
+  if (!parsed.success) redirect(`/projects/${value(formData, "projectId")}/tasks/${value(formData, "taskId")}?error=INVALID_COMMENT`);
+  const { supabase } = await authenticatedClient();
+  const { error } = await supabase.rpc("add_task_comment", { comment_task_id: parsed.data.taskId, comment_body: parsed.data.body });
+  if (error) redirect(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}?error=COMMENT_FORBIDDEN`);
+  revalidatePath(`/projects/${parsed.data.projectId}`); revalidatePath(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}`); revalidatePath("/dashboard");
+  redirect(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}?status=COMMENT_ADDED`);
+}
+
+export async function openNotification(formData: FormData) {
+  const parsed = notificationActionSchema.safeParse({ notificationId: value(formData, "notificationId"), projectId: value(formData, "projectId"), taskId: value(formData, "taskId") });
+  if (!parsed.success) redirect("/dashboard?error=INVALID_NOTIFICATION");
+  const { supabase } = await authenticatedClient();
+  const { error } = await supabase.rpc("mark_notification_read", { notification_id: Number(parsed.data.notificationId) });
+  if (error) redirect("/dashboard?error=NOTIFICATION_FORBIDDEN");
+  revalidatePath("/dashboard"); redirect(`/projects/${parsed.data.projectId}/tasks/${parsed.data.taskId}`);
 }
