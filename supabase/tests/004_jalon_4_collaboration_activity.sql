@@ -16,7 +16,9 @@ select public.create_project_task('40000000-0000-0000-0000-000000000041','300000
 select isnt(public.add_task_comment('40000000-0000-0000-0000-000000000041','Premier commentaire'),null::uuid,'REQ-023: owner comments');
 select is((select count(*) from public.comments),1::bigint,'comment is persisted once');
 select is((select count(*) from public.activity_events where event_type='comment.created'),1::bigint,'comment activity is recorded');
+reset role;
 select is((select count(*) from public.notifications),2::bigint,'other project members are notified');
+set local role authenticated;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000042',true);
 select is((select count(*) from public.comments),1::bigint,'member reads project comments');
 select is((select count(*) from public.notifications),1::bigint,'member sees only own notification');
