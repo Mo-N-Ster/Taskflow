@@ -37,9 +37,18 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_SENTRY_DSN=
+SENTRY_DSN=
+SENTRY_AUTH_TOKEN=
+SENTRY_ORG=
+SENTRY_PROJECT=
+OTEL_EXPORTER_OTLP_ENDPOINT=
+OTEL_EXPORTER_OTLP_HEADERS=
 ```
 
 `SUPABASE_SERVICE_ROLE_KEY` est serveur uniquement. Les valeurs `NEXT_PUBLIC_*` sont publiques par conception et ne doivent jamais être utilisées pour autoriser une action.
+
+`SENTRY_AUTH_TOKEN` et `OTEL_EXPORTER_OTLP_HEADERS` sont des secrets de build/serveur. Le DSN navigateur est public par conception, mais Sentry est configuré sans collecte automatique de données personnelles. Preview conserve Supabase staging ; seules les variables Vercel Production doivent viser le futur projet Supabase Production.
 
 Après une modification de `supabase/config.toml` ou d'un template Auth, exécuter `pnpm supabase:stop` puis `pnpm supabase:start` : un simple reset de base ne recrée pas le service Auth.
 

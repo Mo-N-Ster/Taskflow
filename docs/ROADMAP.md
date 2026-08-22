@@ -95,6 +95,18 @@ Ajouter les notes de livrables, l'historique et les règles de visibilité avant
 
 Configurer Vercel, Prometheus, Grafana, logs, Sentry, alertes, sauvegardes et procédure de rollback.
 
+**Statut : en cours depuis le 22 août 2026.** Le socle applicatif et les runbooks sont implémentés sur une branche dédiée. La séparation Supabase Production, les intégrations externes, la protection GitHub et les exercices d'alerte/restauration nécessitent une validation contrôlée dans les consoles concernées.
+
+- [x] health check applicatif et dépendance Supabase
+- [x] corrélation `request_id` et logs JSON minimisés
+- [x] instrumentation OpenTelemetry et Sentry sans PII par défaut
+- [x] smoke test automatisé et runbooks incident/rollback/restore
+- [ ] projet Supabase Production séparé, migré et relié uniquement à Vercel Production
+- [ ] sauvegarde externe chiffrée et restauration testée sur projet jetable
+- [ ] export OTLP Grafana, dashboards et alertes testés
+- [ ] projet Sentry, source maps et alerte d'exception validés
+- [ ] protection de `master` avec checks et revue obligatoires
+
 **Sortie :** une release peut être déployée, observée et annulée avec une procédure écrite.
 
 ## Jalon 7 : conformité et résilience
