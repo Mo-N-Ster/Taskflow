@@ -14,18 +14,18 @@ insert into public.project_members(project_id,user_id,role) values
 ('30000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000054','member'),
 ('30000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000055','observer');
 select public.create_project_task('40000000-0000-0000-0000-000000000051','30000000-0000-0000-0000-000000000051','Livrable','','high',null,array['00000000-0000-0000-0000-000000000053']::uuid[]);
-select isnt(public.create_task_evaluation('40000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000053',5,'Excellent'),null::uuid,'REQ-030: owner evaluates assigned member');
+select isnt(public.create_task_evaluation('40000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000053',5::smallint,'Excellent'),null::uuid,'REQ-030: owner evaluates assigned member');
 select is((select count(*) from public.evaluations),1::bigint,'owner sees evaluation');
 select is((select score from public.evaluations),5::smallint,'score is persisted');
 select is((select count(*) from public.activity_events where event_type='evaluation.created'),1::bigint,'evaluation is audited');
 reset role; select is((select count(*) from public.notifications where user_id='00000000-0000-0000-0000-000000000053'),1::bigint,'evaluated member is notified'); set local role authenticated;
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000052',true);
-select isnt(public.create_task_evaluation('40000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000053',4,'Solide'),null::uuid,'manager can add historical evaluation');
+select isnt(public.create_task_evaluation('40000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000053',4::smallint,'Solide'),null::uuid,'manager can add historical evaluation');
 select is((select count(*) from public.evaluations),2::bigint,'manager sees full history');
-select throws_ok($$select public.create_task_evaluation('40000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000054',4,'Non assigné')$$,'P0001','MEMBER_NOT_ASSIGNED','unassigned member cannot be evaluated');
+select throws_ok($$select public.create_task_evaluation('40000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000054',4::smallint,'Non assigné')$$,'P0001','MEMBER_NOT_ASSIGNED','unassigned member cannot be evaluated');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000053',true);
 select is((select count(*) from public.evaluations),2::bigint,'REQ-031: evaluated member sees history');
-select throws_ok($$select public.create_task_evaluation('40000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000054',3,'Interdit')$$,'P0001','ROLE_FORBIDDEN','member cannot evaluate');
+select throws_ok($$select public.create_task_evaluation('40000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000054',3::smallint,'Interdit')$$,'P0001','ROLE_FORBIDDEN','member cannot evaluate');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000054',true);
 select is((select count(*) from public.evaluations),0::bigint,'other member cannot see evaluation');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000055',true);
@@ -34,5 +34,5 @@ select throws_ok($$insert into public.evaluations(task_id,reviewer_id,member_id,
 select throws_ok($$update public.evaluations set score=1$$,'42501',null,'evaluation history is immutable');
 select throws_ok($$delete from public.evaluations$$,'42501',null,'evaluation deletion is denied');
 select set_config('request.jwt.claim.sub','00000000-0000-0000-0000-000000000051',true);
-select throws_ok($$select public.create_task_evaluation('40000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000053',6,'Invalide')$$,'P0001','INVALID_EVALUATION','score outside range is rejected');
+select throws_ok($$select public.create_task_evaluation('40000000-0000-0000-0000-000000000051','00000000-0000-0000-0000-000000000053',6::smallint,'Invalide')$$,'P0001','INVALID_EVALUATION','score outside range is rejected');
 select * from finish(); rollback;
