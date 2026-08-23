@@ -6,6 +6,8 @@ export async function register() {
     serviceName: "taskflow-web",
     attributes: {
       "service.namespace": "taskflow",
+      "deployment.environment":
+        process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "development",
     },
   });
 
