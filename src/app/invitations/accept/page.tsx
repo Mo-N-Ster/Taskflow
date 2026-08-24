@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { acceptInvitation, declineInvitationByToken } from "@/app/projects/collaboration-actions";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
+import { TaskFlowBrand } from "@/components/taskflow-brand";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type AcceptInvitationPageProps = { searchParams: Promise<{ token?: string; error?: string }> };
@@ -13,7 +14,7 @@ export default async function AcceptInvitationPage({ searchParams }: AcceptInvit
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-10 text-slate-50">
       <section className="mx-auto max-w-xl rounded-3xl border border-slate-800 bg-slate-900 p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">TaskFlow</p>
+        <TaskFlowBrand />
         <h1 className="mt-2 text-3xl font-semibold">Invitation à un projet</h1>
         <p className="mt-3 text-sm text-slate-400">Connectez-vous avec l’adresse invitée, puis acceptez cette invitation.</p>
         {user?.email ? <p className="mt-3 rounded-xl bg-slate-950/70 p-3 text-sm text-slate-300">Compte actuellement connecté : <strong className="text-white">{user.email}</strong></p> : null}

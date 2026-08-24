@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "TaskFlow",
   description: "PWA collaborative pour piloter des projets d'équipe et suivre les livrables.",
+  icons: {
+    icon: [{ url: "/icon.jpeg", type: "image/jpeg" }],
+    shortcut: "/icon.jpeg",
+    apple: "/icon.jpeg",
+  },
 };
 
 export default function RootLayout({

@@ -4,6 +4,7 @@ import { logout } from "@/app/auth/actions";
 import { acceptInvitationFromDashboard, declineInvitationFromDashboard, openNotification } from "@/app/projects/collaboration-actions";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
+import { TaskFlowBrand } from "@/components/taskflow-brand";
 
 type ProjectSummary = {
   id: string;
@@ -49,7 +50,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         {status === "PROJECT_LEFT" ? <p role="status" className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">Vous avez quitté le projet. Vos anciennes assignations ont été libérées.</p> : null}
         <header className="mb-6 flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/80 p-5 backdrop-blur-sm md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">TaskFlow</p>
+            <TaskFlowBrand />
             <h1 className="mt-2 text-3xl font-semibold text-white">Dashboard</h1>
             <p className="mt-2 text-sm text-slate-400">{user?.email}</p>
           </div>

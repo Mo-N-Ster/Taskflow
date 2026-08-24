@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { addTaskComment, createEvaluation, reassignTask, updateTaskStatus } from "@/app/projects/collaboration-actions";
 import { PendingSubmitButton } from "@/components/pending-submit-button";
+import { TaskFlowBrand } from "@/components/taskflow-brand";
 import { taskPriorityLabels, taskStatusLabels } from "@/lib/collaboration";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -25,7 +26,7 @@ export default async function TaskPage({ params, searchParams }: Props) {
   const { data: evaluations } = await supabase.from("evaluations").select("id,score,comment,created_at,reviewer:profiles!evaluations_reviewer_id_fkey(display_name),member:profiles!evaluations_member_id_fkey(display_name)").eq("task_id", taskId).order("created_at", { ascending: false });
   const project = Array.isArray(task.projects) ? task.projects[0] : task.projects;
   const names = (task.task_assignees ?? []).map((item) => (Array.isArray(item.profiles) ? item.profiles[0] : item.profiles)?.display_name ?? "Utilisateur");
-  return <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-50"><div className="mx-auto max-w-4xl"><Link href={`/projects/${projectId}`} className="text-sm text-cyan-300">← Retour au projet</Link>
+  return <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-50"><div className="mx-auto max-w-4xl"><div className="flex flex-wrap items-center justify-between gap-3"><TaskFlowBrand /><Link href={`/projects/${projectId}`} className="text-sm text-cyan-300">← Retour au projet</Link></div>
     {query.error ? <p role="alert" className="mt-5 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">Vous n’êtes pas autorisé à effectuer cette modification.</p> : null}{query.status === "UPDATED" ? <p role="status" className="mt-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">Statut mis à jour.</p> : null}{query.status === "REASSIGNED" ? <p role="status" className="mt-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">Assignations mises à jour.</p> : null}
     <section className="mt-5 rounded-3xl border border-slate-800 bg-slate-900 p-6"><p className="text-xs uppercase tracking-[0.2em] text-slate-500">{project?.name}</p><h1 className="mt-2 text-3xl font-semibold">{task.title}</h1><p className="mt-4 whitespace-pre-wrap text-slate-300">{task.description || "Aucune description."}</p>
       <dl className="mt-6 grid gap-4 sm:grid-cols-3"><Info label="Priorité" value={taskPriorityLabels[task.priority as keyof typeof taskPriorityLabels]} /><Info label="Statut" value={taskStatusLabels[task.status as keyof typeof taskStatusLabels]} /><Info label="Échéance" value={task.due_date ?? "Non définie"} /></dl><p className="mt-6 text-sm text-slate-300">Assignés : {names.join(", ") || "Personne"}</p>
