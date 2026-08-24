@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { login } from "@/app/auth/actions";
+import { TaskFlowBrand } from "@/components/taskflow-brand";
 
 type LoginPageProps = {
   searchParams: Promise<{ error?: string; status?: string; next?: string }>;
@@ -12,7 +13,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10 text-slate-50">
       <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/60">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">TaskFlow</p>
+        <TaskFlowBrand />
         <h1 className="mt-3 text-3xl font-semibold text-white">Connexion</h1>
         <p className="mt-2 text-sm text-slate-400">Accédez à vos projets et à votre activité autorisée.</p>
 

@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { TaskFlowBrand } from "@/components/taskflow-brand";
+
 import {
   getProjectProgress,
   getTaskPriorityCounts,
@@ -58,7 +60,7 @@ export default function Home() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <header className="mb-6 flex flex-col gap-4 rounded-3xl border border-slate-800 bg-slate-900/80 p-5 shadow-2xl shadow-slate-950/60 backdrop-blur-sm lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">TaskFlow</p>
+            <TaskFlowBrand />
             <h1 className="mt-2 text-3xl font-semibold text-white">Tableau de pilotage</h1>
           </div>
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { createProject } from "@/app/projects/actions";
+import { TaskFlowBrand } from "@/components/taskflow-brand";
 
 type NewProjectPageProps = {
   searchParams: Promise<{ error?: string }>;
@@ -14,7 +15,7 @@ export default async function NewProjectPage({ searchParams }: NewProjectPagePro
       <div className="mx-auto max-w-2xl rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/60">
         <div className="mb-6 flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">TaskFlow</p>
+            <TaskFlowBrand />
             <h1 className="mt-2 text-3xl font-semibold text-white">Nouveau projet</h1>
           </div>
           <Link href="/dashboard" className="text-sm text-cyan-300 hover:text-cyan-200">

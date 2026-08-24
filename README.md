@@ -19,6 +19,9 @@ Le projet est un parcours d'apprentissage CTO et DevOps. La documentation est la
 - [Sécurité, conformité et gouvernance](docs/SECURITY-COMPLIANCE.md)
 - [Registre des données personnelles](docs/PERSONAL-DATA-REGISTER.md)
 - [Observabilité, monitoring et alertes](docs/OBSERVABILITY.md)
+- [Réponse aux incidents](docs/runbooks/INCIDENT-RESPONSE.md)
+- [Rollback applicatif et données](docs/runbooks/ROLLBACK.md)
+- [Sauvegarde et restauration](docs/runbooks/BACKUP-RESTORE.md)
 - [Analyse STPA](docs/STPA.md)
 - [Traçabilité et gestion des preuves](docs/TRACEABILITY.md)
 - [Processus DevOps et CI/CD](docs/DEVOPS-PROCESS.md)
@@ -48,4 +51,4 @@ pnpm build
 
 ## État actuel
 
-Les Jalons 1 à 5 sont terminés et déployés. Le Jalon 6 est le prochain objectif : observabilité, alertes, sauvegardes et procédure de rollback.
+Les Jalons 1 à 5 sont terminés et déployés. Le Jalon 6 est en cours : la séparation Production, l'observabilité et les procédures d'exploitation sont implémentées ; les exercices d'alerte, sauvegarde/restauration et la protection de `master` restent à valider.

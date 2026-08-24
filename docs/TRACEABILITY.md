@@ -106,6 +106,17 @@ Une fonctionnalité n'est complète que lorsque cette chaîne est consultable. L
 
 **Décision du 22 août 2026 :** le Jalon 5 satisfait sa sortie et autorise l'ouverture du Jalon 6.
 
+### Preuves en préparation pour le Jalon 6
+
+| Contrôle | Implémentation | Preuve attendue |
+| --- | --- | --- |
+| SEC-25, STPA UCA-05 | health check, OpenTelemetry, Sentry, logs corrélés et smoke planifié | Preview, événement Sentry, trace Grafana et alerte testée |
+| SEC-18 | export logique chiffré, rétention et restauration isolée | registre avec empreintes et test de restauration trimestriel |
+| SEC-16, SEC-24, STPA UCA-06 | protection `master`, smoke post-release et rollback Vercel | règle GitHub, exécution CI et exercice de rollback |
+| Séparation des environnements | Supabase staging pour Preview, projet distinct pour Production | variables Vercel contrôlées et historique des migrations synchronisé |
+
+**Preuve OTLP du 22 août 2026 :** la Preview de la PR #13 a produit des traces `taskflow-web` visibles dans Grafana Tempo pour l'authentification, le dashboard, les projets et `/api/health`. Les spans santé `d898d792753986f4b7c1c0344b564713` et `8371512f66724cf1a2c72034a4337b58` valident la chaîne Vercel → OTLP → Grafana ; le dashboard et le déclenchement d'alerte restent requis avant clôture.
+
 ## Definition of Done
 
 - exigence et critère d'acceptation identifiés ;
